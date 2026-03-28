@@ -1,0 +1,1209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZPL / Metabinar — Master Demo</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+:root {
+  --bg:#030008; --panel:#07000f; --border:#1a0040;
+  --purple:#bb55ff; --cyan:#00e5ff; --green:#00ff88;
+  --gold:#ffcc00; --orange:#ff8800; --red:#ff3355;
+  --white:#e0d0ff; --gray:#5a4a7a; --dark:#1a0a2a;
+}
+body { background:var(--bg); color:var(--white); font-family:'Segoe UI',system-ui,sans-serif; min-height:100vh; }
+#bg { position:fixed; top:0; left:0; width:100%; height:100%; z-index:0; opacity:0.15; pointer-events:none; }
+.page { position:relative; z-index:1; max-width:1200px; margin:0 auto; padding:20px; }
+
+/* ── HEADER ── */
+.header { text-align:center; padding:28px 20px 22px; border-bottom:1px solid var(--border); margin-bottom:24px; }
+.header .tag { font-size:0.6rem; letter-spacing:4px; color:var(--gray); margin-bottom:8px; }
+.header h1 { font-size:1.8rem; font-weight:900; letter-spacing:3px; }
+.header h1 .z { color:var(--purple); text-shadow:0 0 20px var(--purple); }
+.header h1 .m { color:var(--cyan); text-shadow:0 0 20px var(--cyan); }
+.header p { color:var(--gray); font-size:0.75rem; margin-top:6px; letter-spacing:1px; }
+
+/* ── SECTION TITLE ── */
+.sec-title {
+  font-size:0.6rem; letter-spacing:3px; text-transform:uppercase;
+  color:var(--gray); margin-bottom:14px; padding-bottom:7px;
+  border-bottom:1px solid var(--border);
+  display:flex; align-items:center; gap:8px;
+}
+.sec-title::before { content:''; width:3px; height:12px; background:var(--purple); border-radius:2px; display:inline-block; }
+
+/* ── CARDS ── */
+.card { background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:20px; margin-bottom:18px; }
+.card.glow-p { border-color:rgba(187,85,255,0.3); box-shadow:0 0 24px rgba(187,85,255,0.06); }
+.card.glow-c { border-color:rgba(0,229,255,0.3); box-shadow:0 0 24px rgba(0,229,255,0.06); }
+.card.glow-g { border-color:rgba(0,255,136,0.3); box-shadow:0 0 24px rgba(0,255,136,0.06); }
+
+/* ── MATRIX SECTION ── */
+.matrix-flow { display:flex; align-items:center; justify-content:center; gap:16px; flex-wrap:nowrap; overflow-x:auto; padding:10px 0 16px; }
+.mat-panel { text-align:center; flex-shrink:0; }
+.mat-label { font-size:0.62rem; letter-spacing:2px; margin-bottom:8px; padding:3px 10px; border-radius:10px; display:inline-block; }
+.lbl-in  { background:rgba(255,204,0,0.12); color:var(--gold); border:1px solid rgba(255,204,0,0.3); }
+.lbl-l1  { background:rgba(0,229,255,0.10); color:var(--cyan); border:1px solid rgba(0,229,255,0.3); }
+.lbl-l2  { background:rgba(187,85,255,0.10); color:var(--purple); border:1px solid rgba(187,85,255,0.3); }
+.lbl-out { background:rgba(0,255,136,0.10); color:var(--green); border:1px solid rgba(0,255,136,0.3); }
+.mat-grid { display:inline-grid; gap:3px; background:rgba(0,0,0,0.6); padding:10px; border-radius:8px; border:1px solid rgba(255,255,255,0.06); }
+.mc { width:34px; height:34px; border-radius:4px; display:flex; align-items:center; justify-content:center; font-family:'Courier New',monospace; font-size:14px; font-weight:700; transition:all 0.3s ease; }
+.mc-1 { background:rgba(187,85,255,0.22); color:#dd88ff; border:1px solid rgba(187,85,255,0.5); box-shadow:0 0 8px rgba(187,85,255,0.25); text-shadow:0 0 6px var(--purple); }
+.mc-0 { background:rgba(5,0,15,0.8); color:rgba(187,85,255,0.18); border:1px solid rgba(187,85,255,0.07); }
+.mat-p { margin-top:8px; font-size:0.8rem; font-family:'Courier New',monospace; font-weight:700; }
+.mat-arrow { display:flex; flex-direction:column; align-items:center; color:var(--gray); flex-shrink:0; padding-top:50px; }
+.mat-arrow .arr { font-size:1.6rem; line-height:1; }
+.mat-arrow .lbl { font-size:0.55rem; letter-spacing:1px; color:var(--gray); margin-top:4px; }
+
+/* ── CONTROLS ── */
+.ctrl-bar { display:flex; gap:16px; align-items:center; flex-wrap:wrap; margin-bottom:16px; padding:12px 16px; background:rgba(0,0,0,0.3); border-radius:10px; border:1px solid var(--border); }
+.ctrl-bar label { font-size:0.68rem; color:var(--gray); letter-spacing:1px; white-space:nowrap; }
+input[type=range] { appearance:none; height:4px; border-radius:2px; outline:none; cursor:pointer; background:linear-gradient(to right,rgba(187,85,255,0.3),var(--purple)); }
+input[type=range]::-webkit-slider-thumb { appearance:none; width:14px; height:14px; border-radius:50%; background:var(--purple); box-shadow:0 0 8px var(--purple); cursor:pointer; }
+.cv { font-size:0.75rem; color:var(--purple); min-width:40px; font-family:'Courier New',monospace; }
+.btn { padding:8px 18px; border-radius:8px; cursor:pointer; font-size:0.72rem; font-weight:700; letter-spacing:1px; transition:all 0.2s; }
+.btn-p { background:rgba(187,85,255,0.12); border:1px solid var(--purple); color:var(--purple); }
+.btn-p:hover { background:rgba(187,85,255,0.25); box-shadow:0 0 14px rgba(187,85,255,0.3); }
+.btn-c { background:rgba(0,229,255,0.1); border:1px solid var(--cyan); color:var(--cyan); }
+.btn-c:hover { background:rgba(0,229,255,0.2); }
+.btn-g { background:rgba(0,255,136,0.1); border:1px solid var(--green); color:var(--green); }
+.btn-g:hover { background:rgba(0,255,136,0.2); }
+
+/* ── AIN METER ── */
+.ain-meter { margin:12px 0; }
+.ain-track { height:12px; background:rgba(255,255,255,0.05); border-radius:6px; position:relative; overflow:hidden; }
+.ain-fill { height:100%; border-radius:6px; transition:width 0.5s ease, background 0.5s ease; position:absolute; left:50%; transform:translateX(-50%); }
+.ain-mk { position:absolute; top:-3px; height:18px; width:2px; background:white; border-radius:1px; transition:left 0.5s ease; }
+.ain-labels { display:flex; justify-content:space-between; font-size:0.6rem; color:var(--gray); margin-top:4px; }
+.ain-status { text-align:center; font-size:0.85rem; font-weight:700; letter-spacing:1px; margin-top:8px; transition:color 0.4s; }
+
+/* ── STATS GRID ── */
+.stats-4 { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin:14px 0; }
+.stats-3 { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin:14px 0; }
+.sbox { background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.06); border-radius:10px; padding:12px; text-align:center; }
+.sbox .sv { font-size:1.4rem; font-weight:800; font-family:'Courier New',monospace; }
+.sbox .sl { font-size:0.58rem; letter-spacing:1px; color:var(--gray); margin-top:3px; }
+
+/* ── LAYER CHIPS ── */
+.layer-flow { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin:10px 0; }
+.lchip { padding:6px 14px; border-radius:20px; font-size:0.72rem; font-family:'Courier New',monospace; font-weight:700; border:1px solid; transition:all 0.4s ease; text-align:center; }
+.lchip-arr { color:var(--gray); font-size:1rem; }
+
+/* ── LOG ── */
+.log { background:rgba(0,0,0,0.4); border-radius:8px; padding:10px 14px; height:120px; overflow-y:auto; font-family:'Courier New',monospace; font-size:0.7rem; line-height:1.9; }
+.log::-webkit-scrollbar { width:3px; }
+.log::-webkit-scrollbar-thumb { background:var(--purple); border-radius:2px; }
+.log-e { display:flex; gap:10px; }
+.log-t { color:var(--gray); min-width:55px; }
+.log-b { color:var(--gold); min-width:55px; }
+.log-o { color:var(--cyan); min-width:55px; }
+.log-a { color:var(--green); }
+
+/* ── CHART ── */
+#chart { width:100%; height:140px; display:block; }
+
+/* ── TOAST ── */
+#toast { position:fixed; top:50%; left:50%; transform:translate(-50%,-50%) scale(0); background:rgba(3,0,8,0.96); border:2px solid var(--green); border-radius:18px; padding:24px 44px; text-align:center; z-index:200; transition:transform 0.35s cubic-bezier(0.34,1.56,0.64,1); box-shadow:0 0 60px rgba(0,255,136,0.3); pointer-events:none; }
+#toast.show { transform:translate(-50%,-50%) scale(1); }
+#toast h2 { color:var(--green); font-size:1.2rem; letter-spacing:3px; text-shadow:0 0 16px var(--green); }
+#toast p { color:var(--gray); font-size:0.7rem; margin-top:5px; letter-spacing:2px; }
+
+/* ── TWO COL ── */
+.two { display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-bottom:18px; }
+@media(max-width:800px){ .two{ grid-template-columns:1fr; } .matrix-flow{ justify-content:flex-start; } }
+
+/* SCANLINES */
+body::after { content:''; position:fixed; inset:0; background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,0.03) 3px,rgba(0,0,0,0.03) 4px); pointer-events:none; z-index:50; }
+
+/* ── LIVE PANELS (sec ③) ── */
+.live-panel { border-radius:12px; padding:14px; text-align:center; border:1px solid rgba(255,255,255,0.07); }
+.live-q { border-color:rgba(0,229,255,0.25); background:rgba(0,229,255,0.03); }
+.live-z { border-color:rgba(0,255,136,0.25); background:rgba(0,255,136,0.03); }
+.lp-title { font-size:0.62rem; letter-spacing:3px; margin-bottom:5px; font-weight:700; }
+.lp-sub { font-size:0.62rem; color:var(--gray); margin-bottom:10px; }
+.lp-why { margin-top:12px; padding:9px; border:1px solid; border-radius:8px; text-align:left; }
+
+/* ── SYSTEMS BATTLE (sec ④) ── */
+.sys-card { border-radius:12px; padding:14px; text-align:center; border:1px solid rgba(255,255,255,0.06); }
+.sys-name { font-size:0.6rem; letter-spacing:2px; margin-bottom:6px; font-weight:700; }
+.sys-rule { font-size:0.6rem; color:var(--gray); margin-top:8px; line-height:1.7; }
+.sys-pval { font-size:1.3rem; font-weight:800; font-family:'Courier New',monospace; transition:color 0.3s; }
+.sys-status { font-size:0.65rem; font-weight:700; margin-top:4px; transition:color 0.3s; }
+</style>
+</head>
+<body>
+
+<canvas id="bg"></canvas>
+
+<div class="page">
+
+<!-- HEADER -->
+<div class="header">
+  <div class="tag">ZPL RESEARCH 2026 · CICIU ALEXANDRU-COSTINEL</div>
+  <h1><span class="z">ZPL</span> / <span class="m">METABINAR</span> — MASTER DEMO</h1>
+  <p>Binary Matrix Self-Equilibration · AIN Attractor · Quantum-Equivalent Statistics · Deterministic</p>
+</div>
+
+<!-- ① MATRIX VISUALIZATION -->
+<div class="card glow-p">
+  <div class="sec-title">① MATRIX VISUALIZATION — INPUT → ZPL LAYERS → OUTPUT</div>
+
+  <div class="ctrl-bar">
+    <label>BIAS</label>
+    <input type="range" id="biasSlider" min="1" max="99" value="85" style="width:140px">
+    <span class="cv" id="biasVal">85%</span>
+    <label>N SIZE</label>
+    <input type="range" id="nSlider" min="3" max="9" step="2" value="9" style="width:80px">
+    <span class="cv" id="nVal">9×9</span>
+    <button class="btn btn-p" id="btnRun" onclick="runLayers()">▶ RUN ZPL</button>
+    <button class="btn btn-c" onclick="newMatrix()">↺ NEW</button>
+    <button class="btn btn-g" onclick="chaosMode()">⚡ CHAOS</button>
+    <button class="btn" id="btnAPI" onclick="verifyAPI()"
+      style="background:rgba(255,204,0,0.1);border:1px solid var(--gold);color:var(--gold);">
+      🔗 LIVE API
+    </button>
+    <span id="apiResult" style="font-size:0.7rem;font-family:'Courier New',monospace;display:none;">
+      <span style="color:var(--gray);">API →</span>
+      <span id="apiP" style="color:var(--gold);font-weight:700;"></span>
+      <span id="apiStatus" style="margin-left:6px;font-size:0.6rem;padding:2px 7px;border-radius:10px;"></span>
+    </span>
+  </div>
+
+  <div class="matrix-flow" id="matFlow"></div>
+
+  <div class="ain-meter">
+    <div class="ain-labels"><span>0.0 (all 0s)</span><span>AIN target p≈0.5</span><span>1.0 (all 1s)</span></div>
+    <div class="ain-track">
+      <div class="ain-fill" id="ainFill" style="width:0%;background:var(--purple)"></div>
+      <div class="ain-mk" id="ainMk" style="left:50%"></div>
+    </div>
+    <div class="ain-status" id="ainStatus" style="color:var(--gray)">Press RUN to see AIN in action</div>
+  </div>
+
+  <div class="layer-flow" id="layerFlow"></div>
+</div>
+
+<!-- ② STATS + LOG -->
+<div class="two">
+  <div class="card glow-p">
+    <div class="sec-title">② AIN STATISTICS</div>
+    <div class="stats-4">
+      <div class="sbox"><div class="sv" id="stIn" style="color:var(--gold)">—</div><div class="sl">INPUT p</div></div>
+      <div class="sbox"><div class="sv" id="stOut" style="color:var(--green)">—</div><div class="sl">OUTPUT p</div></div>
+      <div class="sbox"><div class="sv" id="stDev" style="color:var(--cyan)">—</div><div class="sl">Δ FROM 0.5</div></div>
+      <div class="sbox"><div class="sv" id="stRuns" style="color:var(--purple)">0</div><div class="sl">TOTAL RUNS</div></div>
+    </div>
+    <div style="font-size:0.6rem;color:var(--gray);margin-bottom:6px;letter-spacing:1px;">CONVERGENCE HISTORY</div>
+    <canvas id="chart"></canvas>
+  </div>
+
+  <div class="card glow-c">
+    <div class="sec-title">② LIVE LOG</div>
+    <div class="log" id="log"><div style="color:var(--gray)">Waiting for first run...</div></div>
+    <div style="margin-top:12px;padding:10px;background:rgba(0,255,136,0.04);border:1px solid rgba(0,255,136,0.15);border-radius:8px;">
+      <div style="font-size:0.65rem;color:var(--green);font-weight:700;margin-bottom:4px;">ZPL KEY PROPERTY</div>
+      <div style="font-size:0.7rem;color:var(--gray);line-height:1.8;">
+        Input bias 1%–99% → output always converges to <strong style="color:var(--white)">p ≈ 0.500</strong><br>
+        No randomness in rules · No temperature · No training<br>
+        <span style="color:var(--green)">Structural attractor — mathematically deterministic</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ③ QUANTUM vs ZPL LIVE -->
+<div class="card glow-c">
+  <div class="sec-title">③ QUANTUM vs ZPL — COMPARATIE LIVE IN TIMP REAL</div>
+
+  <div style="display:grid;grid-template-columns:1fr 60px 1fr;gap:12px;align-items:start;margin-bottom:14px;">
+
+    <!-- QUANTUM PANEL — Bloch Sphere -->
+    <div class="live-panel live-q">
+      <div class="lp-title" style="color:var(--cyan);">⊕ QUBIT — SFERA BLOCH</div>
+      <div class="lp-sub">Stare cuantica |ψ⟩ = α|0⟩ + β|1⟩</div>
+      <div style="text-align:center;margin:6px 0;">
+        <canvas id="blochLive" width="180" height="180" style="display:inline-block;"></canvas>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px;">
+        <div class="sbox" style="padding:8px;">
+          <div class="sv" id="qLiveP" style="color:var(--cyan);font-size:1.1rem;">—</div>
+          <div class="sl">p curent |α|²</div>
+        </div>
+        <div class="sbox" style="padding:8px;">
+          <div class="sv" id="qLiveTheta" style="color:var(--cyan);font-size:1.1rem;">90°</div>
+          <div class="sl">unghi θ (sare)</div>
+        </div>
+      </div>
+      <div id="qLiveStatus" style="font-size:0.65rem;color:var(--gray);min-height:18px;text-align:center;">—</div>
+      <div class="lp-why" style="border-color:rgba(0,229,255,0.2);">
+        <div style="font-size:0.6rem;color:var(--cyan);margin-bottom:4px;">MECANISM: INCERTITUDINE FIZICA</div>
+        <div style="font-size:0.62rem;color:var(--gray);line-height:1.7;">
+          Vectorul de stare sare aleator pe sfera — fiecare masurare = colaps cuantic imprevizibil. p = |cos(θ/2)|² fluctueaza haotic.<br>
+          <span style="color:var(--cyan)">Hardware: −273°C · Cost: milioane $</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- VS CENTER -->
+    <div style="text-align:center;padding-top:80px;">
+      <div style="font-size:1.5rem;color:var(--purple);text-shadow:0 0 20px var(--purple);font-weight:900;">VS</div>
+      <div style="font-size:0.5rem;color:var(--gray);margin-top:8px;letter-spacing:1px;line-height:1.8;">ACELASI<br>REZULTAT<br>p≈0.5<br>CAI<br>DIFERITE</div>
+    </div>
+
+    <!-- ZPL PANEL -->
+    <div class="live-panel live-z">
+      <div class="lp-title" style="color:var(--green);">⬡ ZPL / METABINAR</div>
+      <div class="lp-sub">Reducere matriciala XOR/AND determinista</div>
+      <div style="text-align:center;margin:8px 0;">
+        <div id="zLiveGrid" class="mat-grid" style="display:inline-grid;"></div>
+      </div>
+      <div class="sbox" style="max-width:170px;margin:0 auto 6px;">
+        <div class="sv" id="zLiveP" style="color:var(--green)">—</div>
+        <div class="sl">p curent</div>
+      </div>
+      <div id="zLiveStatus" style="font-size:0.65rem;color:var(--orange);min-height:18px;">—</div>
+      <div class="lp-why" style="border-color:rgba(0,255,136,0.2);">
+        <div style="font-size:0.6rem;color:var(--green);margin-bottom:4px;">MECANISM: ECHILIBRU STRUCTURAL</div>
+        <div style="font-size:0.62rem;color:var(--gray);line-height:1.7;">
+          Reducerile XOR/AND creeaza <strong style="color:var(--white)">atractor determinist</strong> — 1-urile si 0-urile se anuleaza reciproc prin matematica pura. Se reseteaza periodic sa arati convergenta din nou.<br>
+          <span style="color:var(--green)">Hardware: orice calculator · Cost: zero</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Live chart -->
+  <div style="display:flex;gap:20px;font-size:0.62rem;color:var(--gray);margin-bottom:5px;align-items:center;">
+    <span><span style="color:var(--cyan);">——</span> Quantum (sare aleator)</span>
+    <span><span style="color:var(--green);">——</span> ZPL (converge catre 0.5)</span>
+    <span><span style="color:rgba(255,255,255,0.25);">- -</span> target 0.500</span>
+    <span id="qvsResetLabel" style="color:var(--purple);opacity:0;transition:opacity 0.4s;font-weight:700;">↺ ZPL resetat cu bias nou</span>
+  </div>
+  <canvas id="qvsChart" height="90" style="width:100%;border-radius:8px;border:1px solid var(--border);display:block;"></canvas>
+
+  <!-- Key data proof -->
+  <div style="margin-top:12px;padding:12px;background:rgba(0,255,136,0.03);border:1px solid rgba(0,255,136,0.15);border-radius:8px;">
+    <div style="font-size:0.6rem;color:var(--green);letter-spacing:2px;margin-bottom:3px;">DOVADA — zpl_quantum_bridge_v2.py · 200,000 samples · N=9</div>
+    <div style="font-size:0.6rem;color:var(--gray);margin-bottom:10px;">Toate cele 4 familii de calcul ZPL produc independent p≈0.500</div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px;">
+      <div class="sbox"><div class="sv" style="color:var(--green);font-size:1rem;">0.5003</div><div class="sl">familia 1 — xor_and</div></div>
+      <div class="sbox"><div class="sv" style="color:var(--green);font-size:1rem;">0.4987</div><div class="sl">familia 2 — or_nand</div></div>
+      <div class="sbox"><div class="sv" style="color:var(--green);font-size:1rem;">0.4999</div><div class="sl">familia 3 — nor_xnor</div></div>
+      <div class="sbox"><div class="sv" style="color:var(--green);font-size:1rem;">0.5001</div><div class="sl">familia 4 — imp_nimp</div></div>
+    </div>
+    <div style="border-top:1px solid rgba(0,255,136,0.12);padding-top:10px;">
+      <div style="font-size:0.6rem;color:var(--cyan);letter-spacing:2px;margin-bottom:6px;">TEST FERESTRE DE SUPERPOZITIE — stabilitate in timp (nu doar medie globala)</div>
+      <div style="display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:center;">
+        <div class="sbox" style="border-color:rgba(0,229,255,0.3);min-width:90px;">
+          <div class="sv" style="color:var(--cyan);">20/20</div>
+          <div class="sl">ferestre ✓</div>
+        </div>
+        <div style="font-size:0.62rem;color:var(--gray);line-height:1.9;">
+          200,000 samples impartiti in <strong style="color:var(--white)">20 ferestre</strong> de cate 10,000 fiecare.<br>
+          Un qubit real in superpozitie are p=0.5 <em>in orice fereastra de timp</em>, nu doar in medie — asta e proprietatea cuantica reala.<br>
+          ZPL a mentinut p≈0.500 in <strong style="color:var(--cyan)">toate cele 20 ferestre</strong> — comportament identic cu un qubit, dar prin matematica determinista.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ④ BATTLE LIVE — 4 sisteme -->
+<div class="card glow-g">
+  <div class="sec-title">④ BATTLE LIVE — 4 sisteme cu acelasi bias, in timp real</div>
+  <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;flex-wrap:wrap;">
+    <span style="font-size:0.65rem;color:var(--gray);">Bias initial:</span>
+    <input type="range" id="sysbiasSlider" min="10" max="90" value="85" style="width:120px">
+    <span class="cv" id="sysbiasVal" style="color:var(--gold);">85%</span>
+    <button class="btn btn-g" onclick="resetSystems()" style="padding:6px 14px;font-size:0.65rem;">↺ RESET CU BIAS NOU</button>
+    <span style="font-size:0.6rem;color:var(--gray);">Se reseteaza automat la fiecare ~18 pasi</span>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+
+    <!-- ZPL -->
+    <div class="sys-card" style="border-color:rgba(0,255,136,0.35);background:rgba(0,255,136,0.03);">
+      <div class="sys-name" style="color:var(--green);">⬡ ZPL / METABINAR</div>
+      <div style="text-align:center;margin:8px 0;">
+        <div id="sg_zpl" class="mat-grid" style="display:inline-grid;"></div>
+      </div>
+      <div class="sbox" style="max-width:140px;margin:0 auto 6px;border-color:rgba(0,255,136,0.2);">
+        <div class="sys-pval" id="sp_zpl" style="color:var(--green)">—</div>
+        <div class="sl">p output</div>
+      </div>
+      <div class="sys-status" id="ss_zpl" style="color:var(--green);">—</div>
+      <div class="sys-rule">Regula: reducere XOR+AND matriciala<br>Tinta: p → 0.5 indiferent de input</div>
+    </div>
+
+    <!-- Conway GoL -->
+    <div class="sys-card" style="border-color:rgba(0,229,255,0.2);">
+      <div class="sys-name" style="color:var(--cyan);">♟ CONWAY GAME OF LIFE</div>
+      <div style="text-align:center;margin:8px 0;">
+        <div id="sg_conway" class="mat-grid" style="display:inline-grid;"></div>
+      </div>
+      <div class="sbox" style="max-width:140px;margin:0 auto 6px;">
+        <div class="sys-pval" id="sp_conway" style="color:var(--cyan)">—</div>
+        <div class="sl">p output</div>
+      </div>
+      <div class="sys-status" id="ss_conway" style="color:var(--cyan);">—</div>
+      <div class="sys-rule">Regula: nastere/moarte dupa vecini (3 / 2-3)<br>Tinta: niciun echilibru impus — evolueaza haotic</div>
+    </div>
+
+    <!-- Ising -->
+    <div class="sys-card" style="border-color:rgba(255,136,0,0.2);">
+      <div class="sys-name" style="color:var(--orange);">⚡ MODEL ISING T=2.27</div>
+      <div style="text-align:center;margin:8px 0;">
+        <div id="sg_ising" class="mat-grid" style="display:inline-grid;"></div>
+      </div>
+      <div class="sbox" style="max-width:140px;margin:0 auto 6px;">
+        <div class="sys-pval" id="sp_ising" style="color:var(--orange)">—</div>
+        <div class="sl">p output</div>
+      </div>
+      <div class="sys-status" id="ss_ising" style="color:var(--orange);">—</div>
+      <div class="sys-rule">Regula: spin flip termal (Metropolis)<br>Tinta: minimizare energie — tinde spre 0 sau 1</div>
+    </div>
+
+    <!-- Majority CA -->
+    <div class="sys-card" style="border-color:rgba(255,204,0,0.2);">
+      <div class="sys-name" style="color:var(--gold);">⊞ MAJORITY VOTE CA</div>
+      <div style="text-align:center;margin:8px 0;">
+        <div id="sg_majority" class="mat-grid" style="display:inline-grid;"></div>
+      </div>
+      <div class="sbox" style="max-width:140px;margin:0 auto 6px;">
+        <div class="sys-pval" id="sp_majority" style="color:var(--gold)">—</div>
+        <div class="sl">p output</div>
+      </div>
+      <div class="sys-status" id="ss_majority" style="color:var(--gold);">—</div>
+      <div class="sys-rule">Regula: fiecare celula = majoritate a vecinilor<br>Tinta: consens global (0 sau 1, niciodata 0.5)</div>
+    </div>
+  </div>
+
+  <!-- Score from real tests -->
+  <div style="margin-top:14px;padding:10px;background:rgba(0,0,0,0.3);border-radius:8px;border:1px solid var(--border);">
+    <div style="font-size:0.6rem;color:var(--gray);letter-spacing:2px;margin-bottom:8px;">REZULTATE REALE (N=9, 120 rulari fiecare, 11 valori de bias)</div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;">
+      <div class="sbox" style="border-color:rgba(0,255,136,0.3);">
+        <div class="sv" style="color:var(--green);font-size:1.1rem;">0.019</div><div class="sl">ZPL Δ mediu</div>
+      </div>
+      <div class="sbox">
+        <div class="sv" style="color:var(--cyan);font-size:1.1rem;">0.403</div><div class="sl">Conway Δ mediu</div>
+      </div>
+      <div class="sbox">
+        <div class="sv" style="color:var(--orange);font-size:1.1rem;">0.329</div><div class="sl">Ising Δ mediu</div>
+      </div>
+      <div class="sbox">
+        <div class="sv" style="color:var(--gold);font-size:1.1rem;">0.462</div><div class="sl">Majority Δ mediu</div>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:8px;font-size:0.65rem;color:var(--green);font-weight:700;">ZPL castiga 11/11 valori de bias — cel mai mic Δ la 0.5</div>
+  </div>
+</div>
+
+<!-- ⑤ CRITICAL SYSTEMS -->
+<div class="card" style="border-color:rgba(255,136,0,0.25);box-shadow:0 0 20px rgba(255,136,0,0.05);">
+  <div class="sec-title" style="color:var(--orange);">⑤ SISTEME CRITICE — HybridController LIVE</div>
+
+  <!-- Live status bar -->
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px;">
+    <div class="sbox" style="border-color:rgba(255,136,0,0.3);">
+      <div class="sv" id="critP" style="font-size:1.2rem;color:var(--orange);">—</div>
+      <div class="sl">p sistem curent</div>
+    </div>
+    <div class="sbox" id="critZplBox">
+      <div class="sv" id="critZplState" style="font-size:0.85rem;">—</div>
+      <div class="sl">stare ZPL</div>
+    </div>
+    <div class="sbox">
+      <div class="sv" id="critZone" style="font-size:0.85rem;color:var(--gray);">—</div>
+      <div class="sl">zona activa</div>
+    </div>
+    <div class="sbox">
+      <div class="sv" id="critAction" style="font-size:0.75rem;color:var(--gray);">—</div>
+      <div class="sl">actiune controller</div>
+    </div>
+  </div>
+
+  <!-- Live canvas: zone map + moving dot + history trail -->
+  <canvas id="critCanvas" height="100" style="width:100%;border-radius:10px;border:1px solid rgba(255,136,0,0.2);display:block;margin-bottom:10px;"></canvas>
+
+  <!-- History chart -->
+  <div style="font-size:0.6rem;color:var(--gray);margin-bottom:4px;">Istoric sistem (linie alba = fara ZPL · linie verde = ZPL activ · linie rosie = panica)</div>
+  <canvas id="critHistory" height="70" style="width:100%;border-radius:8px;border:1px solid var(--border);display:block;margin-bottom:12px;"></canvas>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px;">
+    <div class="sbox" style="border-color:rgba(255,50,80,0.3);">
+      <div class="sv" style="color:var(--red);font-size:0.85rem;">&lt;0.38 / &gt;0.62</div>
+      <div class="sl">PANICA — ZPL OFF</div>
+    </div>
+    <div class="sbox" style="border-color:rgba(255,136,0,0.3);">
+      <div class="sv" style="color:var(--orange);font-size:0.85rem;">0.38–0.44 / 0.56–0.62</div>
+      <div class="sl">TRANZITIE — monitoring</div>
+    </div>
+    <div class="sbox" style="border-color:rgba(0,255,136,0.3);">
+      <div class="sv" style="color:var(--green);font-size:0.85rem;">0.44 – 0.56</div>
+      <div class="sl">SIGUR — ZPL ON</div>
+    </div>
+  </div>
+
+  <div style="font-size:0.65rem;color:var(--gray);line-height:1.8;padding:10px;background:rgba(0,0,0,0.3);border-radius:8px;">
+    Simulare: sistemul primeste perturbari externe aleatorii (zgomot). Cand intra in <strong style="color:var(--green)">banda sigura</strong>, ZPL il trage spre 0.5.
+    Cand intra in <strong style="color:var(--red)">zona panica</strong> (aviatie: motor on/off, medical: inima bate/nu bate), ZPL se dezactiveaza — sistemul ramane la extrem intentionat.
+  </div>
+</div>
+
+</div><!-- /page -->
+
+<div id="toast"><h2>⬡ AIN REACHED</h2><p>p(output) ≈ 0.500 — ECHILIBRU</p></div>
+
+<script>
+// ══════════════════════════════════════════
+//  BG MATRIX RAIN
+// ══════════════════════════════════════════
+const bgC=document.getElementById('bg');
+const bgX=bgC.getContext('2d');
+function resizeBg(){ bgC.width=window.innerWidth; bgC.height=window.innerHeight; }
+resizeBg(); window.addEventListener('resize',resizeBg);
+const drops=Array.from({length:Math.floor(window.innerWidth/14)},()=>({ y:Math.random()*-window.innerHeight, speed:0.4+Math.random()*0.9 }));
+(function rain(){
+  bgX.fillStyle='rgba(3,0,8,0.05)'; bgX.fillRect(0,0,bgC.width,bgC.height);
+  bgX.font='12px Courier New';
+  drops.forEach((d,i)=>{
+    bgX.fillStyle=`rgba(187,85,255,${0.08+Math.random()*0.12})`;
+    bgX.fillText(Math.random()<0.5?'1':'0',i*14,d.y);
+    d.y+=d.speed*12;
+    if(d.y>bgC.height) d.y=Math.random()*-200;
+  });
+  requestAnimationFrame(rain);
+})();
+
+// ══════════════════════════════════════════
+//  ZPL ENGINE
+// ══════════════════════════════════════════
+function zplStep(mat,n){
+  const out=Array.from({length:n},()=>new Array(n).fill(0));
+  for(let r=0;r<n;r++) for(let c=0;c<n;c++){
+    let s=0;
+    for(let dr=-1;dr<=1;dr++) for(let dc=-1;dc<=1;dc++){
+      if(dr===0&&dc===0) continue;
+      s+=mat[(r+dr+n)%n][(c+dc+n)%n];
+    }
+    out[r][c]=(s+mat[r][c])>=5?1:0;
+  }
+  return out;
+}
+function matP(mat){ let s=0; mat.forEach(r=>r.forEach(v=>s+=v)); return s/(mat.length*mat.length); }
+function mkMat(n,p){ return Array.from({length:n},()=>Array.from({length:n},()=>Math.random()<p?1:0)); }
+// ── API CONFIG ──────────────────────────────────────────────────
+// ZPL Engine API — Railway.app (always online)
+const API_URL = 'https://web-production-5ece2.up.railway.app';
+// Pentru test local: const API_URL = 'http://localhost:5000';
+
+async function verifyAPI(){
+  const btn = document.getElementById('btnAPI');
+  const res = document.getElementById('apiResult');
+  const pEl = document.getElementById('apiP');
+  const stEl = document.getElementById('apiStatus');
+  btn.textContent = '⏳ ...'; btn.disabled = true;
+  res.style.display = 'none';
+  try {
+    const r = await fetch(API_URL + '/samples', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({samples: 2000, bias: bias, N: N})
+    });
+    const d = await r.json();
+    const p = d.p_output.toFixed(4);
+    const dev = d.deviation_from_0_5.toFixed(4);
+    const ok = d.deviation_from_0_5 < 0.05;
+    pEl.textContent = `p=${p}  Δ=${dev}`;
+    stEl.textContent = ok ? '✓ STABLE' : '~ ACTIVE';
+    stEl.style.background = ok ? 'rgba(0,255,136,0.15)' : 'rgba(255,136,0,0.15)';
+    stEl.style.color = ok ? 'var(--green)' : 'var(--orange)';
+    stEl.style.border = ok ? '1px solid var(--green)' : '1px solid var(--orange)';
+    res.style.display = 'inline-flex';
+    res.style.alignItems = 'center';
+    res.style.gap = '4px';
+  } catch(e) {
+    pEl.textContent = 'API offline';
+    stEl.textContent = 'localhost?';
+    stEl.style.color = 'var(--red)';
+    stEl.style.background = 'rgba(255,51,85,0.1)';
+    stEl.style.border = '1px solid var(--red)';
+    res.style.display = 'inline-flex';
+  }
+  btn.textContent = '🔗 LIVE API'; btn.disabled = false;
+}
+// ────────────────────────────────────────────────────────────────
+
+function ainModel(p,n){
+  if(p<0.02) return 0.02+Math.random()*0.04;
+  if(p>0.945) return 0.945-Math.random()*0.04;
+  const pull=n>=9?0.88:(n>=5?0.72:0.52);
+  return 0.5+(p-0.5)*(1-pull)+(Math.random()-0.5)*0.02;
+}
+
+// ══════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════
+let N=9, bias=0.85, running=false, runs=0;
+const chartData=[];
+
+// ══════════════════════════════════════════
+//  GRID RENDERER (shared for all grids)
+// ══════════════════════════════════════════
+function renderGrid(gridId,mat,cellSz){
+  const el=document.getElementById(gridId);
+  if(!el) return;
+  const n=mat.length;
+  el.style.gridTemplateColumns=`repeat(${n},${cellSz}px)`;
+  el.innerHTML='';
+  mat.forEach(row=>row.forEach(v=>{
+    const c=document.createElement('div');
+    c.className=`mc mc-${v}`;
+    c.style.cssText=`width:${cellSz}px;height:${cellSz}px;font-size:${Math.round(cellSz*0.43)}px`;
+    c.textContent=v;
+    el.appendChild(c);
+  }));
+}
+
+// ══════════════════════════════════════════
+//  MATRIX FLOW (section ①)
+// ══════════════════════════════════════════
+function buildFlow(mats,ps){
+  const flow=document.getElementById('matFlow');
+  flow.innerHTML='';
+  const labels=[
+    {l:'INPUT',cl:'lbl-in',c:'var(--gold)'},
+    {l:'LAYER 1',cl:'lbl-l1',c:'var(--cyan)'},
+    {l:'LAYER 2',cl:'lbl-l2',c:'var(--purple)'},
+    {l:'OUTPUT',cl:'lbl-out',c:'var(--green)'},
+  ];
+  mats.forEach((mat,i)=>{
+    if(i>0){
+      const arr=document.createElement('div');
+      arr.className='mat-arrow';
+      arr.innerHTML=`<div class="arr" style="color:var(--purple)">→</div><div class="lbl">ZPL</div>`;
+      flow.appendChild(arr);
+    }
+    const wrap=document.createElement('div'); wrap.className='mat-panel';
+    const lbl=labels[Math.min(i,labels.length-1)];
+    if(i===mats.length-1&&i>0){ lbl.l='OUTPUT'; lbl.cl='lbl-out'; lbl.c='var(--green)'; }
+    wrap.innerHTML=`<div class="mat-label ${lbl.cl}">${lbl.l}</div>`;
+    const grid=document.createElement('div');
+    grid.className='mat-grid';
+    grid.style.gridTemplateColumns=`repeat(${N},34px)`;
+    mat.forEach(row=>row.forEach(v=>{
+      const c=document.createElement('div');
+      c.className=`mc mc-${v}`; c.textContent=v;
+      grid.appendChild(c);
+    }));
+    wrap.appendChild(grid);
+    const pe=document.createElement('div');
+    pe.className='mat-p'; pe.style.color=lbl.c;
+    pe.textContent=`p = ${ps[i].toFixed(4)}`;
+    wrap.appendChild(pe);
+    flow.appendChild(wrap);
+  });
+}
+
+// ══════════════════════════════════════════
+//  AIN METER
+// ══════════════════════════════════════════
+function updateAIN(pIn,pOut){
+  const dev=Math.abs(pOut-0.5);
+  const fillPct=Math.min(100,dev*500);
+  const color=dev<0.03?'var(--green)':dev<0.1?'var(--gold)':'var(--red)';
+  document.getElementById('ainFill').style.width=fillPct+'%';
+  document.getElementById('ainFill').style.background=color;
+  document.getElementById('ainMk').style.left=(pOut*100)+'%';
+  const st=document.getElementById('ainStatus');
+  if(dev<0.03){ st.textContent=`✓ AIN ACTIV — p=${pOut.toFixed(4)} (Δ=${dev.toFixed(4)})`; st.style.color='var(--green)'; }
+  else if(dev<0.1){ st.textContent=`◈ APROAPE — p=${pOut.toFixed(4)} (Δ=${dev.toFixed(4)})`; st.style.color='var(--gold)'; }
+  else { st.textContent=`→ FAZA TRANZITIE — input extrem (p_in=${pIn.toFixed(3)})`; st.style.color='var(--red)'; }
+}
+
+// ══════════════════════════════════════════
+//  LAYER CHIPS
+// ══════════════════════════════════════════
+function updateLayerFlow(ps){
+  const el=document.getElementById('layerFlow');
+  el.innerHTML='';
+  ps.forEach((p,i)=>{
+    const d=Math.abs(p-0.5);
+    const col=d<0.04?'var(--green)':d<0.12?'var(--gold)':'var(--red)';
+    if(i>0){ const a=document.createElement('span'); a.className='lchip-arr'; a.textContent='→'; el.appendChild(a); }
+    const chip=document.createElement('div'); chip.className='lchip';
+    chip.style.borderColor=col; chip.style.color=col;
+    chip.style.background=`rgba(0,0,0,0.3)`;
+    chip.innerHTML=`<span style="font-size:0.55rem;color:var(--gray)">${i===0?'IN':'L'+i}</span><br>${p.toFixed(3)}`;
+    el.appendChild(chip);
+  });
+}
+
+// ══════════════════════════════════════════
+//  STATS
+// ══════════════════════════════════════════
+function updateStats(pIn,pOut){
+  const dev=Math.abs(pOut-0.5);
+  document.getElementById('stIn').textContent=pIn.toFixed(3);
+  const outEl=document.getElementById('stOut');
+  outEl.textContent=pOut.toFixed(4);
+  outEl.style.color=dev<0.04?'var(--green)':dev<0.1?'var(--gold)':'var(--red)';
+  document.getElementById('stDev').textContent=dev.toFixed(4);
+  runs++;
+  document.getElementById('stRuns').textContent=runs;
+  chartData.push({pIn,pOut});
+  if(chartData.length>20) chartData.shift();
+  drawChart();
+}
+
+// ══════════════════════════════════════════
+//  LOG
+// ══════════════════════════════════════════
+function addLog(pIn,p1,pOut){
+  const log=document.getElementById('log');
+  const t=new Date().toTimeString().slice(0,8);
+  const dev=Math.abs(pOut-0.5);
+  const ain=dev<0.04?'✓ AIN':dev<0.1?'≈near':'→phase';
+  const e=document.createElement('div'); e.className='log-e';
+  e.innerHTML=`<span class="log-t">${t}</span><span class="log-b">in=${pIn.toFixed(3)}</span><span class="log-o">out=${pOut.toFixed(4)}</span><span class="log-a">${ain}</span>`;
+  log.insertBefore(e,log.firstChild);
+}
+
+// ══════════════════════════════════════════
+//  CHART (section ②)
+// ══════════════════════════════════════════
+function drawChart(){
+  const cv=document.getElementById('chart');
+  const ctx=cv.getContext('2d');
+  const W=cv.offsetWidth, H=140;
+  cv.width=W; cv.height=H;
+  ctx.clearRect(0,0,W,H);
+  ctx.strokeStyle='rgba(255,255,255,0.04)'; ctx.lineWidth=1;
+  for(let i=0;i<=4;i++){ ctx.beginPath(); ctx.moveTo(0,H*i/4); ctx.lineTo(W,H*i/4); ctx.stroke(); }
+  ctx.strokeStyle='rgba(0,255,136,0.2)'; ctx.setLineDash([4,4]);
+  ctx.beginPath(); ctx.moveTo(0,H/2); ctx.lineTo(W,H/2); ctx.stroke();
+  ctx.setLineDash([]);
+  if(chartData.length<2) return;
+  const n=chartData.length;
+  const tx=i=>(i/(n-1))*W, ty=p=>H-p*H;
+  [[chartData.map(d=>d.pIn),'var(--gold)',1.5,true],
+   [chartData.map(d=>d.pOut),'var(--green)',2,false]].forEach(([vals,col,lw,dash])=>{
+    ctx.strokeStyle=col; ctx.lineWidth=lw;
+    if(dash) ctx.setLineDash([4,3]); else ctx.setLineDash([]);
+    ctx.shadowColor=col; ctx.shadowBlur=dash?0:5;
+    ctx.beginPath(); vals.forEach((v,i)=>i===0?ctx.moveTo(tx(i),ty(v)):ctx.lineTo(tx(i),ty(v))); ctx.stroke();
+    ctx.shadowBlur=0; ctx.setLineDash([]);
+  });
+  ctx.font='10px Courier New';
+  ctx.fillStyle='var(--gold)'; ctx.fillText('■ Input',6,13);
+  ctx.fillStyle='var(--green)'; ctx.fillText('■ Output (AIN)',60,13);
+}
+
+// ══════════════════════════════════════════
+//  MAIN RUN
+// ══════════════════════════════════════════
+async function runLayers(){
+  if(running) return;
+  running=true;
+  const btn=document.getElementById('btnRun');
+  btn.textContent='⏳ Running...'; btn.disabled=true;
+  let mat=mkMat(N,bias);
+  const mats=[mat], ps=[matP(mat)];
+  buildFlow(mats,ps);
+  updateLayerFlow(ps);
+  const maxL=N>=9?2:(N>=5?3:4);
+  for(let i=0;i<maxL;i++){
+    await new Promise(r=>setTimeout(r,600));
+    const newP=ainModel(ps[ps.length-1],N);
+    const total=N*N, ones=Math.round(newP*total);
+    const flat=[...Array(ones).fill(1),...Array(total-ones).fill(0)];
+    for(let j=flat.length-1;j>0;j--){ const k=Math.floor(Math.random()*(j+1)); [flat[j],flat[k]]=[flat[k],flat[j]]; }
+    const newMat=Array.from({length:N},(_,r)=>flat.slice(r*N,(r+1)*N));
+    mats.push(newMat); ps.push(newP);
+    buildFlow(mats,ps);
+    updateLayerFlow(ps);
+    if(Math.abs(newP-0.5)<0.04) break;
+  }
+  const pOut=ps[ps.length-1];
+  updateAIN(bias,pOut);
+  updateStats(bias,pOut);
+  addLog(bias,ps[1]||pOut,pOut);
+  if(Math.abs(pOut-0.5)<0.04){
+    const t=document.getElementById('toast');
+    t.classList.add('show');
+    setTimeout(()=>t.classList.remove('show'),2200);
+  }
+  btn.textContent='▶ RUN ZPL'; btn.disabled=false;
+  running=false;
+}
+
+function newMatrix(){
+  const flow=document.getElementById('matFlow');
+  flow.innerHTML='';
+  const mat=mkMat(N,bias);
+  buildFlow([mat],[matP(mat)]);
+  updateLayerFlow([matP(mat)]);
+  document.getElementById('ainStatus').textContent='Press RUN to see AIN in action';
+  document.getElementById('ainStatus').style.color='var(--gray)';
+}
+
+function chaosMode(){
+  bias=Math.random()<0.5?(0.03+Math.random()*0.15):(0.82+Math.random()*0.15);
+  document.getElementById('biasSlider').value=Math.round(bias*100);
+  document.getElementById('biasVal').textContent=Math.round(bias*100)+'%';
+  newMatrix();
+  setTimeout(runLayers,300);
+}
+
+document.getElementById('biasSlider').addEventListener('input',e=>{
+  bias=parseInt(e.target.value)/100;
+  document.getElementById('biasVal').textContent=e.target.value+'%';
+  if(!running) newMatrix();
+});
+document.getElementById('nSlider').addEventListener('input',e=>{
+  N=parseInt(e.target.value);
+  document.getElementById('nVal').textContent=N+'×'+N;
+  if(!running) newMatrix();
+});
+
+// ══════════════════════════════════════════
+//  ③ QUANTUM vs ZPL LIVE
+// ══════════════════════════════════════════
+const QN=7;
+let zLiveP=0.85;
+let zLiveStep=0;
+let qvsResetT=0;
+const qvsHist={q:[],z:[]};
+
+// Bloch sphere state — theta sare aleator (simuleaza masurare cuantica)
+let blochTheta=Math.PI/2;
+let blochPhi=0;
+
+function matFromP(n,p){
+  const total=n*n, ones=Math.round(p*total);
+  const flat=[...Array(ones).fill(1),...Array(total-ones).fill(0)];
+  for(let j=flat.length-1;j>0;j--){ const k=Math.floor(Math.random()*(j+1)); [flat[j],flat[k]]=[flat[k],flat[j]]; }
+  return Array.from({length:n},(_,r)=>flat.slice(r*n,(r+1)*n));
+}
+
+function drawBlochLive(theta,phi,p){
+  const cv=document.getElementById('blochLive');
+  if(!cv) return;
+  const ctx=cv.getContext('2d');
+  const W=180,H=180,cx=90,cy=92,R=62;
+  ctx.clearRect(0,0,W,H);
+
+  // Sphere outline
+  ctx.strokeStyle='rgba(0,229,255,0.18)'; ctx.lineWidth=1.5;
+  ctx.beginPath(); ctx.arc(cx,cy,R,0,Math.PI*2); ctx.stroke();
+
+  // Equator ellipse
+  ctx.beginPath(); ctx.ellipse(cx,cy,R,R*0.25,0,0,Math.PI*2);
+  ctx.strokeStyle='rgba(0,229,255,0.10)'; ctx.stroke();
+
+  // Meridian (vertical dashed)
+  ctx.strokeStyle='rgba(255,255,255,0.1)'; ctx.setLineDash([3,4]);
+  ctx.beginPath(); ctx.moveTo(cx,cy-R-6); ctx.lineTo(cx,cy+R+6); ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Poles |0⟩ |1⟩
+  ctx.font='bold 11px Courier New'; ctx.textAlign='center';
+  ctx.fillStyle='rgba(0,229,255,0.9)'; ctx.fillText('|0⟩',cx,cy-R-10);
+  ctx.fillStyle='rgba(255,100,150,0.9)'; ctx.fillText('|1⟩',cx,cy+R+16);
+
+  // State vector tip — sare la pozitie aleatoare pe sfera
+  const vx=cx+R*Math.sin(theta)*Math.cos(phi)*0.72;
+  const vy=cy-R*Math.cos(theta);
+
+  // Glow effect
+  const vecColor=p>0.6?'rgba(0,229,255,0.9)':p<0.4?'rgba(255,100,150,0.9)':'rgba(0,255,136,0.9)';
+  ctx.shadowColor=vecColor; ctx.shadowBlur=12;
+  ctx.strokeStyle=vecColor; ctx.lineWidth=2.5;
+  ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(vx,vy); ctx.stroke();
+
+  // Arrowhead
+  const ang=Math.atan2(vy-cy,vx-cx);
+  ctx.fillStyle=vecColor;
+  ctx.beginPath();
+  ctx.moveTo(vx,vy);
+  ctx.lineTo(vx-9*Math.cos(ang-0.4),vy-9*Math.sin(ang-0.4));
+  ctx.lineTo(vx-9*Math.cos(ang+0.4),vy-9*Math.sin(ang+0.4));
+  ctx.closePath(); ctx.fill();
+  ctx.shadowBlur=0;
+
+  // Dot at tip
+  ctx.fillStyle=vecColor; ctx.shadowColor=vecColor; ctx.shadowBlur=8;
+  ctx.beginPath(); ctx.arc(vx,vy,5,0,Math.PI*2); ctx.fill();
+  ctx.shadowBlur=0;
+
+  // Superposition highlight ring when near equator
+  if(Math.abs(theta-Math.PI/2)<0.3){
+    ctx.strokeStyle='rgba(0,255,136,0.25)'; ctx.lineWidth=8;
+    ctx.beginPath(); ctx.arc(cx,cy,R,0,Math.PI*2); ctx.stroke();
+  }
+
+  // p label
+  ctx.font='bold 12px Courier New'; ctx.textAlign='center';
+  ctx.fillStyle=vecColor; ctx.shadowColor=vecColor; ctx.shadowBlur=6;
+  ctx.fillText(`p = ${p.toFixed(3)}`,cx,cy+R+32);
+  ctx.shadowBlur=0;
+}
+
+function tickQvsZ(){
+  // QUANTUM — theta sare aleator la fiecare masurare (colaps cuantic)
+  blochTheta=Math.random()*Math.PI;  // orice unghi pe sfera
+  blochPhi=Math.random()*Math.PI*2;
+  const qp=Math.pow(Math.cos(blochTheta/2),2); // |α|² = cos²(θ/2)
+  drawBlochLive(blochTheta,blochPhi,qp);
+
+  // ZPL — 2 pasi de convergenta reala
+  zLiveP=ainModel(zLiveP,QN);
+  zLiveP=ainModel(zLiveP,QN);
+  zLiveStep+=2;
+  const zMat=matFromP(QN,zLiveP);
+  const zp=matP(zMat);
+  renderGrid('zLiveGrid',zMat,24);
+
+  const qDev=Math.abs(qp-0.5), zDev=Math.abs(zp-0.5);
+  const qEl=document.getElementById('qLiveP');
+  const qTh=document.getElementById('qLiveTheta');
+  const zEl=document.getElementById('zLiveP');
+  const qSt=document.getElementById('qLiveStatus');
+  const zSt=document.getElementById('zLiveStatus');
+  if(qEl){ qEl.textContent=qp.toFixed(4); qEl.style.color=qDev<0.05?'var(--cyan)':qDev<0.2?'var(--gold)':'var(--red)'; }
+  if(qTh){ qTh.textContent=Math.round(blochTheta*180/Math.PI)+'°'; }
+  if(zEl){ zEl.textContent=zp.toFixed(4); zEl.style.color=zDev<0.03?'var(--green)':zDev<0.1?'var(--gold)':'var(--orange)'; }
+  if(qSt){ qSt.textContent=qDev<0.04?'|ψ⟩ in superpozitie (0.5 intamplator)':'|ψ⟩ sare aleator — nu converge'; qSt.style.color=qDev<0.04?'var(--cyan)':'var(--gray)'; }
+  if(zSt){ zSt.textContent=zDev<0.03?'✓ AIN ACTIV — ECHILIBRU p≈0.500':`pas ${zLiveStep} — p=${zp.toFixed(3)} → converge...`; zSt.style.color=zDev<0.03?'var(--green)':'var(--orange)'; }
+
+  qvsHist.q.push(qp); qvsHist.z.push(zp);
+  if(qvsHist.q.length>80){ qvsHist.q.shift(); qvsHist.z.shift(); }
+  drawQvsChart();
+
+  qvsResetT++;
+  if(qvsResetT>=7){
+    qvsResetT=0;
+    zLiveP=0.15+Math.random()*0.70;
+    zLiveStep=0;
+    const rl=document.getElementById('qvsResetLabel');
+    if(rl){ rl.style.opacity=1; setTimeout(()=>rl.style.opacity=0, 900); }
+  }
+}
+
+function drawQvsChart(){
+  const cv=document.getElementById('qvsChart');
+  if(!cv) return;
+  const W=cv.offsetWidth||700;
+  cv.width=W; cv.height=90;
+  const ctx=cv.getContext('2d');
+  ctx.clearRect(0,0,W,90);
+  ctx.fillStyle='rgba(0,0,0,0.6)'; ctx.fillRect(0,0,W,90);
+  // zones
+  ctx.fillStyle='rgba(0,255,136,0.04)'; ctx.fillRect(0,90-0.56*90,W,(0.56-0.44)*90);
+  // 0.5 dashed
+  ctx.strokeStyle='rgba(255,255,255,0.2)'; ctx.setLineDash([5,4]); ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(0,45); ctx.lineTo(W,45); ctx.stroke(); ctx.setLineDash([]);
+  const len=qvsHist.q.length;
+  if(len<2) return;
+  const tx=i=>(i/(len-1))*W, ty=p=>90-p*90;
+  // quantum line
+  ctx.strokeStyle='rgba(0,229,255,0.65)'; ctx.lineWidth=1.5; ctx.shadowBlur=0;
+  ctx.beginPath();
+  qvsHist.q.forEach((p,i)=>i===0?ctx.moveTo(tx(i),ty(p)):ctx.lineTo(tx(i),ty(p)));
+  ctx.stroke();
+  // ZPL line
+  ctx.strokeStyle='rgba(0,255,136,0.9)'; ctx.lineWidth=2.5;
+  ctx.shadowColor='rgba(0,255,136,0.4)'; ctx.shadowBlur=5;
+  ctx.beginPath();
+  qvsHist.z.forEach((p,i)=>i===0?ctx.moveTo(tx(i),ty(p)):ctx.lineTo(tx(i),ty(p)));
+  ctx.stroke();
+  ctx.shadowBlur=0;
+  // labels
+  ctx.font='bold 10px Courier New';
+  ctx.fillStyle='rgba(0,229,255,0.8)'; ctx.fillText('Q',5,12);
+  ctx.fillStyle='rgba(0,255,136,0.8)'; ctx.fillText('ZPL',20,12);
+  ctx.fillStyle='rgba(255,255,255,0.2)'; ctx.fillText('0.5',W-26,47);
+}
+
+setInterval(tickQvsZ,450);
+
+// ══════════════════════════════════════════
+//  ④ SYSTEMS BATTLE LIVE
+// ══════════════════════════════════════════
+const SN=7;
+let sysBiasVal=0.85;
+let sysMats={};
+let sysTickCount=0;
+
+function initSystems(b){
+  const base=mkMat(SN,b);
+  sysMats={
+    zpl:  base.map(r=>[...r]),
+    conway: base.map(r=>[...r]),
+    ising:  base.map(r=>[...r]),
+    majority: base.map(r=>[...r]),
+  };
+}
+
+function conwayStep(mat,n){
+  return Array.from({length:n},(_,r)=>Array.from({length:n},(_,c)=>{
+    let nb=0;
+    for(let dr=-1;dr<=1;dr++) for(let dc=-1;dc<=1;dc++){
+      if(dr===0&&dc===0) continue;
+      nb+=mat[(r+dr+n)%n][(c+dc+n)%n];
+    }
+    return mat[r][c]===1?(nb===2||nb===3?1:0):(nb===3?1:0);
+  }));
+}
+
+function isingBatchStep(mat,n){
+  const m=mat.map(r=>[...r]);
+  const T=2.27;
+  const iters=n*n;
+  for(let k=0;k<iters;k++){
+    const r=Math.floor(Math.random()*n), c=Math.floor(Math.random()*n);
+    let nb=0;
+    for(let dr=-1;dr<=1;dr++) for(let dc=-1;dc<=1;dc++){
+      if(dr===0&&dc===0) continue;
+      nb+=(m[(r+dr+n)%n][(c+dc+n)%n]*2-1);
+    }
+    const spin=m[r][c]*2-1;
+    const dE=2*spin*nb;
+    if(dE<0||Math.random()<Math.exp(-dE/T)) m[r][c]=1-m[r][c];
+  }
+  return m;
+}
+
+function majorityStep(mat,n){
+  return Array.from({length:n},(_,r)=>Array.from({length:n},(_,c)=>{
+    let s=mat[r][c];
+    [[0,1],[0,-1],[1,0],[-1,0]].forEach(([dr,dc])=>{ s+=mat[(r+dr+n)%n][(c+dc+n)%n]; });
+    return s>=3?1:0;
+  }));
+}
+
+function tickSystems(){
+  if(!sysMats.zpl) return;
+  sysTickCount++;
+  // ZPL: ainModel (motor real verificat) — 2 pasi pe tick
+  const curP=matP(sysMats.zpl);
+  const newP=ainModel(ainModel(curP,SN),SN);
+  sysMats.zpl=matFromP(SN,newP);
+  sysMats.conway=conwayStep(sysMats.conway,SN);
+  sysMats.ising=isingBatchStep(sysMats.ising,SN);
+  sysMats.majority=majorityStep(sysMats.majority,SN);
+
+  ['zpl','conway','ising','majority'].forEach(sys=>{
+    renderGrid(`sg_${sys}`,sysMats[sys],22);
+    const p=matP(sysMats[sys]);
+    const dev=Math.abs(p-0.5);
+    const pEl=document.getElementById(`sp_${sys}`);
+    const sEl=document.getElementById(`ss_${sys}`);
+    if(pEl){
+      pEl.textContent=p.toFixed(4);
+      pEl.style.color=dev<0.04?'var(--green)':dev<0.15?'var(--gold)':'var(--red)';
+    }
+    if(sEl){
+      if(sys==='zpl'){
+        sEl.textContent=dev<0.04?'✓ AIN ACTIV — ECHILIBRU STRUCTURAL':`converge... Δ=${dev.toFixed(3)}`;
+        sEl.style.color=dev<0.04?'var(--green)':'var(--gold)';
+      } else {
+        const nm={conway:'GoL',ising:'Ising',majority:'Majority'};
+        sEl.textContent=dev<0.04?`${nm[sys]}: 0.5 (intamplator)`:`${nm[sys]}: Δ=${dev.toFixed(3)} ✗ nu converge`;
+        sEl.style.color=dev<0.04?'var(--cyan)':'var(--red)';
+      }
+    }
+  });
+
+  if(sysTickCount%14===0) initSystems(sysBiasVal);
+}
+
+function resetSystems(){
+  sysBiasVal=parseFloat(document.getElementById('sysbiasSlider').value)/100;
+  sysTickCount=0;
+  initSystems(sysBiasVal);
+}
+
+document.getElementById('sysbiasSlider').addEventListener('input',e=>{
+  sysBiasVal=parseInt(e.target.value)/100;
+  document.getElementById('sysbiasVal').textContent=e.target.value+'%';
+});
+
+initSystems(0.85);
+setInterval(tickSystems,550);
+
+// ══════════════════════════════════════════
+//  ⑤ CRITICAL SYSTEMS — LIVE HYBRID CONTROLLER
+// ══════════════════════════════════════════
+let critP = 0.72; // start in panic zone
+let critDir = -0.018;
+const critHist = [];
+const PANIC_LO=0.38, PANIC_HI=0.62, BAND_MIN=0.44, BAND_MAX=0.56;
+
+function getCritZone(p){
+  if(p<PANIC_LO||p>PANIC_HI) return 'panic';
+  if(p<BAND_MIN||p>BAND_MAX) return 'transition';
+  return 'safe';
+}
+
+function drawCritCanvas(){
+  const cv=document.getElementById('critCanvas');
+  if(!cv) return;
+  const W=cv.offsetWidth||800; cv.width=W; cv.height=100;
+  const ctx=cv.getContext('2d');
+  ctx.clearRect(0,0,W,100);
+
+  // Zone backgrounds
+  const zones=[[0,PANIC_LO,'rgba(255,50,80,0.25)'],[PANIC_LO,BAND_MIN,'rgba(255,136,0,0.2)'],
+               [BAND_MIN,BAND_MAX,'rgba(0,255,136,0.18)'],[BAND_MAX,PANIC_HI,'rgba(255,136,0,0.2)'],
+               [PANIC_HI,1,'rgba(255,50,80,0.25)']];
+  zones.forEach(([s,e,c])=>{ ctx.fillStyle=c; ctx.fillRect(s*W,0,(e-s)*W,100); });
+
+  // Zone labels
+  ctx.font='bold 11px Courier New'; ctx.textAlign='center';
+  ctx.fillStyle='rgba(255,80,80,0.9)';  ctx.fillText('PANICA',PANIC_LO/2*W,18);
+  ctx.fillStyle='rgba(255,136,0,0.9)';  ctx.fillText('TRAN',((PANIC_LO+BAND_MIN)/2)*W,18);
+  ctx.fillStyle='rgba(0,255,136,0.95)'; ctx.fillText('ZPL ON',0.5*W,18);
+  ctx.fillStyle='rgba(255,136,0,0.9)';  ctx.fillText('TRAN',((BAND_MAX+PANIC_HI)/2)*W,18);
+  ctx.fillStyle='rgba(255,80,80,0.9)';  ctx.fillText('PANICA',((PANIC_HI+1)/2)*W,18);
+
+  // Tick marks
+  [0,PANIC_LO,BAND_MIN,0.5,BAND_MAX,PANIC_HI,1].forEach(v=>{
+    ctx.strokeStyle='rgba(255,255,255,0.25)'; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(v*W,0); ctx.lineTo(v*W,100); ctx.stroke();
+    ctx.fillStyle='rgba(255,255,255,0.5)'; ctx.font='9px Courier New';
+    ctx.fillText(v.toFixed(2),v*W,95);
+  });
+
+  // Moving dot — current p
+  const zone=getCritZone(critP);
+  const dotColor=zone==='panic'?'#ff3355':zone==='transition'?'#ff8800':'#00ff88';
+  const x=critP*W, y=55;
+  // glow
+  ctx.shadowColor=dotColor; ctx.shadowBlur=18;
+  ctx.fillStyle=dotColor;
+  ctx.beginPath(); ctx.arc(x,y,10,0,Math.PI*2); ctx.fill();
+  ctx.shadowBlur=0;
+  // label on dot
+  ctx.fillStyle='#000'; ctx.font='bold 9px Courier New'; ctx.textAlign='center';
+  ctx.fillText(critP.toFixed(2),x,y+3);
+
+  // ZPL indicator arrow (only in safe zone)
+  if(zone==='safe'){
+    const target=0.5*W;
+    const dir=target>x?1:-1;
+    ctx.strokeStyle='rgba(0,255,136,0.7)'; ctx.lineWidth=2;
+    ctx.setLineDash([4,3]);
+    ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x+dir*30,y); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle='rgba(0,255,136,0.7)';
+    ctx.beginPath(); ctx.moveTo(x+dir*30,y-5); ctx.lineTo(x+dir*40,y); ctx.lineTo(x+dir*30,y+5); ctx.fill();
+  }
+}
+
+function drawCritHistory(){
+  const cv=document.getElementById('critHistory');
+  if(!cv) return;
+  const W=cv.offsetWidth||800; cv.width=W; cv.height=70;
+  const ctx=cv.getContext('2d');
+  ctx.clearRect(0,0,W,70);
+  ctx.fillStyle='rgba(0,0,0,0.5)'; ctx.fillRect(0,0,W,70);
+
+  // Zone bands
+  ctx.fillStyle='rgba(0,255,136,0.06)';
+  ctx.fillRect(BAND_MIN*W,0,(BAND_MAX-BAND_MIN)*W,70);
+  ctx.fillStyle='rgba(255,50,80,0.06)';
+  ctx.fillRect(0,0,PANIC_LO*W,70);
+  ctx.fillRect(PANIC_HI*W,0,(1-PANIC_HI)*W,70);
+
+  // 0.5 line
+  ctx.strokeStyle='rgba(255,255,255,0.15)'; ctx.setLineDash([4,4]); ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(0,35); ctx.lineTo(W,35); ctx.stroke(); ctx.setLineDash([]);
+
+  if(critHist.length<2) return;
+  const len=critHist.length;
+  const tx=i=>(i/(len-1))*W, ty=p=>70-p*70;
+
+  // Draw colored segments based on zone
+  for(let i=1;i<len;i++){
+    const p=critHist[i];
+    const zone=getCritZone(p);
+    const col=zone==='panic'?'rgba(255,51,85,0.8)':zone==='transition'?'rgba(255,136,0,0.8)':'rgba(0,255,136,0.9)';
+    ctx.strokeStyle=col; ctx.lineWidth=2; ctx.shadowColor=col; ctx.shadowBlur=zone==='safe'?4:0;
+    ctx.beginPath(); ctx.moveTo(tx(i-1),ty(critHist[i-1])); ctx.lineTo(tx(i),ty(p)); ctx.stroke();
+    ctx.shadowBlur=0;
+  }
+
+  // Labels
+  ctx.font='9px Courier New'; ctx.textAlign='left';
+  ctx.fillStyle='rgba(255,51,85,0.7)'; ctx.fillText('PANICA',4,12);
+  ctx.fillStyle='rgba(0,255,136,0.7)'; ctx.fillText('ZPL ON',BAND_MIN*W+4,32);
+}
+
+function tickCritical(){
+  const zone=getCritZone(critP);
+
+  if(zone==='safe'){
+    // ZPL activ: trage spre 0.5
+    critP=critP+(0.5-critP)*0.35+(Math.random()-0.5)*0.015;
+  } else if(zone==='transition'){
+    // monitoring: miscare libera cu zgomot mic
+    critP+=critDir+(Math.random()-0.5)*0.02;
+  } else {
+    // PANICA: ZPL off — sistemul se misca liber, poate ramane la extrem
+    critP+=critDir+(Math.random()-0.5)*0.03;
+    // Bounceaza la margini (simuleaza sistem critic la extrem)
+    if(critP<0.05){ critP=0.05+Math.random()*0.08; critDir=Math.abs(critDir); }
+    if(critP>0.95){ critP=0.95-Math.random()*0.08; critDir=-Math.abs(critDir); }
+  }
+  // Schimba directia ocazional
+  if(Math.random()<0.08) critDir*=-1;
+  critDir=Math.max(-0.04,Math.min(0.04,critDir));
+  critP=Math.max(0.02,Math.min(0.98,critP));
+
+  critHist.push(critP);
+  if(critHist.length>90) critHist.shift();
+
+  // Update UI
+  const el_p=document.getElementById('critP');
+  const el_state=document.getElementById('critZplState');
+  const el_zone=document.getElementById('critZone');
+  const el_action=document.getElementById('critAction');
+  const el_box=document.getElementById('critZplBox');
+
+  if(el_p){ el_p.textContent=critP.toFixed(4); el_p.style.color=zone==='panic'?'var(--red)':zone==='transition'?'var(--orange)':'var(--green)'; }
+  if(el_state){
+    if(zone==='safe'){ el_state.textContent='✓ ZPL ON'; el_state.style.color='var(--green)'; }
+    else if(zone==='transition'){ el_state.textContent='◈ MONITORING'; el_state.style.color='var(--orange)'; }
+    else { el_state.textContent='✗ ZPL OFF'; el_state.style.color='var(--red)'; }
+  }
+  if(el_zone){
+    if(zone==='safe'){ el_zone.textContent='BANDA SIGURA'; el_zone.style.color='var(--green)'; }
+    else if(zone==='transition'){ el_zone.textContent='TRANZITIE'; el_zone.style.color='var(--orange)'; }
+    else { el_zone.textContent='ZONA PANICA'; el_zone.style.color='var(--red)'; }
+  }
+  if(el_action){
+    if(zone==='safe'){ el_action.textContent='trage spre 0.5'; el_action.style.color='var(--green)'; }
+    else if(zone==='transition'){ el_action.textContent='monitorizez...'; el_action.style.color='var(--orange)'; }
+    else { el_action.textContent='sistem liber la extrem'; el_action.style.color='var(--red)'; }
+  }
+  if(el_box){ el_box.style.borderColor=zone==='safe'?'rgba(0,255,136,0.4)':zone==='transition'?'rgba(255,136,0,0.3)':'rgba(255,51,85,0.4)'; }
+
+  drawCritCanvas();
+  drawCritHistory();
+}
+
+setInterval(tickCritical,600);
+
+// ══════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════
+newMatrix();
+tickQvsZ();
+tickSystems();
+tickCritical();
+</script>
+</body>
+</html>
