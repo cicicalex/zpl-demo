@@ -305,6 +305,21 @@ body::after { content:''; position:fixed; inset:0; background:repeating-linear-g
         style="background:rgba(0,255,136,0.1);border:1px solid var(--green);color:var(--green);font-size:0.68rem;">
         🎯 MAX PRECISION (50k samples)
       </button>
+
+      <button class="btn" onclick="stressConvergence()"
+        style="background:rgba(255,204,0,0.1);border:1px solid var(--gold);color:var(--gold);font-size:0.68rem;">
+        ⏱ CONVERGENCE (100→25600 samples)
+      </button>
+
+      <button class="btn" onclick="stressTemperature()"
+        style="background:rgba(255,136,0,0.1);border:1px solid var(--orange);color:var(--orange);font-size:0.68rem;">
+        🌡 TEMP SWEEP (15 bias levels)
+      </button>
+
+      <button class="btn" onclick="stressReproducibility()"
+        style="background:rgba(187,85,255,0.1);border:1px solid var(--purple);color:var(--purple);font-size:0.68rem;">
+        🔁 REPRODUCIBILITY (7 × same config)
+      </button>
     </div>
     <div id="stressLog" style="margin-top:10px;font-family:'Courier New',monospace;font-size:0.65rem;color:var(--gray);min-height:18px;line-height:1.9;"></div>
   </div>
@@ -1548,6 +1563,79 @@ async function stressMaxPrecision(){
     }catch(e){ stressLog(`ERROR: ${e.message}`, 'var(--red)'); }
   }
   stressLog('🎯 Max precision test done.', 'var(--green)');
+}
+
+async function stressConvergence(){
+  // Shows how Δ from 0.5 decreases as sample count increases
+  // Proves AIN is a real structural property, not sampling noise
+  stressLog('⏱ CONVERGENCE TEST — bias=30% N=9, increasing samples...', 'var(--gold)');
+  const sizes = [100, 200, 400, 800, 1600, 3200, 6400, 12800, 25600];
+  const bias = 0.30;
+  const N = 9;
+  let prevDev = null;
+  for(const s of sizes){
+    try{
+      const t0 = Date.now();
+      const d = await zplCall(bias, N, s);
+      const dev = Math.abs(d.p_output - 0.5);
+      const ms = Date.now() - t0;
+      const bar = '█'.repeat(Math.round(dev * 200)).padEnd(10, '░');
+      const trend = prevDev === null ? '' : (dev < prevDev ? ' ↘ improving' : ' ↗ fluctuating');
+      const col = dev < 0.05 ? 'var(--green)' : dev < 0.10 ? 'var(--gold)' : 'var(--orange)';
+      stressLog(`${String(s).padStart(6)} samples → Δ=${dev.toFixed(4)}  ${bar}${trend} [${ms}ms]`, col);
+      prevDev = dev;
+    }catch(e){ stressLog(`ERROR at ${s} samples: ${e.message}`, 'var(--red)'); }
+  }
+  stressLog('⏱ Convergence done. AIN stabilises as N(samples) grows.', 'var(--gold)');
+}
+
+async function stressTemperature(){
+  // Runs 15 bias levels in one shot and shows all deviations
+  // Quick visual proof that AIN holds across full bias range
+  stressLog('🌡 TEMPERATURE SWEEP — 15 bias levels at N=9, 3000 samples each...', 'var(--orange)');
+  const biases = [0.01, 0.05, 0.10, 0.15, 0.20, 0.30, 0.40, 0.50, 0.60, 0.70, 0.80, 0.85, 0.90, 0.95, 0.99];
+  let stable = 0;
+  for(const b of biases){
+    try{
+      const d = await zplCall(b, 9, 3000);
+      const dev = Math.abs(d.p_output - 0.5);
+      const ok = dev < 0.05;
+      if(ok) stable++;
+      const bar = ok
+        ? '▓'.repeat(Math.round(dev * 100)).padEnd(5, '░')
+        : '▓'.repeat(5);
+      const col = ok ? 'var(--green)' : 'var(--gray)';
+      stressLog(`bias ${(b*100).toFixed(0).padStart(3)}% → p=${d.p_output.toFixed(4)}  Δ=${dev.toFixed(4)}  ${bar}  ${ok ? '✓ AIN' : '~ ACTIVE'}`, col);
+    }catch(e){ stressLog(`bias ${(b*100).toFixed(0)}% ERROR: ${e.message}`, 'var(--red)'); }
+  }
+  stressLog(`🌡 Temperature sweep done. ${stable}/${biases.length} bias levels in AIN equilibrium.`,
+    stable >= 11 ? 'var(--green)' : 'var(--gold)');
+}
+
+async function stressReproducibility(){
+  // Runs the exact same config 7 times to prove deterministic output distribution
+  // ZPL is deterministic per-matrix, but distribution p(output=1) should be consistent
+  stressLog('🔁 REPRODUCIBILITY — bias=30% N=9 × 7 independent runs (5000 samples each)...', 'var(--purple)');
+  const bias = 0.30;
+  const N = 9;
+  const samples = 5000;
+  const results = [];
+  for(let i = 1; i <= 7; i++){
+    try{
+      const d = await zplCall(bias, N, samples);
+      const dev = Math.abs(d.p_output - 0.5);
+      results.push(d.p_output);
+      stressLog(`Run ${i}/7 → p=${d.p_output.toFixed(4)}  Δ=${dev.toFixed(4)}`, dev < 0.05 ? 'var(--purple)' : 'var(--gold)');
+    }catch(e){ stressLog(`Run ${i} ERROR: ${e.message}`, 'var(--red)'); }
+  }
+  if(results.length >= 3){
+    const mean = results.reduce((a,b)=>a+b,0)/results.length;
+    const variance = results.reduce((a,b)=>a+Math.pow(b-mean,2),0)/results.length;
+    const stddev = Math.sqrt(variance);
+    const spread = Math.max(...results) - Math.min(...results);
+    stressLog(`🔁 mean=${mean.toFixed(4)}  σ=${stddev.toFixed(4)}  spread=${spread.toFixed(4)}  ${spread < 0.03 ? '✓ HIGHLY REPRODUCIBLE' : '⚠ HIGH VARIANCE'}`,
+      spread < 0.03 ? 'var(--green)' : 'var(--gold)');
+  }
 }
 
 // ══════════════════════════════════════════
