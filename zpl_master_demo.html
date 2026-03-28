@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ZPL / Metabinar — Master Demo</title>
+<title>ZPL Engine — Live Scientific Demo</title>
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
 :root {
@@ -140,9 +140,9 @@ body::after { content:''; position:fixed; inset:0; background:repeating-linear-g
 
 <!-- HEADER -->
 <div class="header">
-  <div class="tag">ZPL RESEARCH 2026 · CICIU ALEXANDRU-COSTINEL</div>
-  <h1><span class="z">ZPL</span> / <span class="m">METABINAR</span> — MASTER DEMO</h1>
-  <p>Binary Matrix Self-Equilibration · AIN Attractor · Quantum-Equivalent Statistics · Deterministic</p>
+  <div class="tag">ZPL RESEARCH 2026 · CICIU ALEXANDRU-COSTINEL · cicicalex20@gmail.com</div>
+  <h1><span class="z">ZERO POINT LOGIC</span> — <span class="m">LIVE DEMO</span></h1>
+  <p>Binary Matrix Structural Equilibrium · AIN Attractor · 4 Complementary Operator Families · Deterministic · API Live</p>
 </div>
 
 <!-- ① MATRIX VISUALIZATION -->
@@ -212,35 +212,97 @@ body::after { content:''; position:fixed; inset:0; background:repeating-linear-g
   </div>
 </div>
 
-<!-- ③ QUANTUM vs ZPL LIVE -->
+<!-- ③ LIVE API TEST -->
+<div class="card glow-g">
+  <div class="sec-title">③ LIVE SERVER TEST — REAL API CALLS (Railway.app)</div>
+  <div class="ctrl-bar">
+    <label>SAMPLES</label>
+    <select id="apiSamplesSelect" style="background:#0a001a;border:1px solid var(--purple);color:var(--purple);padding:5px 10px;border-radius:6px;font-size:0.72rem;cursor:pointer;">
+      <option value="1000">1,000</option>
+      <option value="5000" selected>5,000</option>
+      <option value="10000">10,000</option>
+    </select>
+    <label>N SIZE</label>
+    <select id="apiNSelect" style="background:#0a001a;border:1px solid var(--cyan);color:var(--cyan);padding:5px 10px;border-radius:6px;font-size:0.72rem;cursor:pointer;">
+      <option value="9" selected>9×9</option>
+      <option value="16">16×16</option>
+      <option value="25">25×25</option>
+    </select>
+    <label>BIAS</label>
+    <input type="range" id="apiBiasSlider" min="1" max="99" value="85" style="width:100px">
+    <span class="cv" id="apiBiasVal">85%</span>
+    <button class="btn btn-g" onclick="runSingleAPITest()">▶ SINGLE TEST</button>
+    <button class="btn btn-p" onclick="runSweepAPITest()">⚡ FULL SWEEP (13 biases)</button>
+    <span id="apiTestStatus" style="font-size:0.68rem;color:var(--gray);font-family:'Courier New',monospace;"></span>
+  </div>
+
+  <!-- Single result -->
+  <div id="apiSingleResult" style="display:none;margin-bottom:14px;padding:14px;background:rgba(0,255,136,0.04);border:1px solid rgba(0,255,136,0.2);border-radius:10px;">
+    <div style="font-size:0.6rem;color:var(--green);letter-spacing:2px;margin-bottom:8px;">SERVER RESPONSE — LIVE FROM API</div>
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;">
+      <div class="sbox"><div class="sv" id="ar_p" style="color:var(--green);font-size:1.1rem;">—</div><div class="sl">p(output)</div></div>
+      <div class="sbox"><div class="sv" id="ar_dev" style="color:var(--cyan);font-size:1.1rem;">—</div><div class="sl">Δ from 0.5</div></div>
+      <div class="sbox"><div class="sv" id="ar_bias" style="color:var(--gold);font-size:1.1rem;">—</div><div class="sl">input bias</div></div>
+      <div class="sbox"><div class="sv" id="ar_n" style="color:var(--purple);font-size:1.1rem;">—</div><div class="sl">N size</div></div>
+      <div class="sbox"><div id="ar_status" class="sv" style="font-size:0.85rem;">—</div><div class="sl">status</div></div>
+    </div>
+  </div>
+
+  <!-- Sweep results -->
+  <div id="apiSweepResult" style="display:none;">
+    <div style="font-size:0.6rem;color:var(--purple);letter-spacing:2px;margin-bottom:10px;">FULL BIAS SWEEP — SERVER RESULTS</div>
+    <div style="overflow-x:auto;">
+      <table id="sweepTable" style="width:100%;border-collapse:collapse;font-size:0.68rem;font-family:'Courier New',monospace;">
+        <thead>
+          <tr style="color:var(--gray);font-size:0.6rem;letter-spacing:1px;">
+            <th style="text-align:left;padding:6px 10px;border-bottom:1px solid var(--border);">BIAS</th>
+            <th style="text-align:center;padding:6px 10px;border-bottom:1px solid var(--border);">p(output)</th>
+            <th style="text-align:center;padding:6px 10px;border-bottom:1px solid var(--border);">Δ from 0.5</th>
+            <th style="text-align:center;padding:6px 10px;border-bottom:1px solid var(--border);">STATUS</th>
+            <th style="text-align:right;padding:6px 10px;border-bottom:1px solid var(--border);">BAR</th>
+          </tr>
+        </thead>
+        <tbody id="sweepBody"></tbody>
+      </table>
+    </div>
+    <div id="sweepSummary" style="margin-top:10px;padding:10px;background:rgba(0,0,0,0.3);border-radius:8px;font-size:0.65rem;"></div>
+  </div>
+
+  <div style="margin-top:10px;font-size:0.62rem;color:var(--gray);line-height:1.7;">
+    All results come directly from the live server at <span style="color:var(--cyan);">web-production-5ece2.up.railway.app</span> — no simulation, no pre-computed data.
+    The server runs the canonical ZPL algorithm (4 complementary boolean operator families, 8N+3 bits) on random binary matrices.
+  </div>
+</div>
+
+<!-- ④ QUANTUM vs ZPL LIVE -->
 <div class="card glow-c">
-  <div class="sec-title">③ QUANTUM vs ZPL — COMPARATIE LIVE IN TIMP REAL</div>
+  <div class="sec-title">④ QUANTUM vs ZPL — LIVE REAL-TIME COMPARISON (simulation)</div>
 
   <div style="display:grid;grid-template-columns:1fr 60px 1fr;gap:12px;align-items:start;margin-bottom:14px;">
 
     <!-- QUANTUM PANEL — Bloch Sphere -->
     <div class="live-panel live-q">
-      <div class="lp-title" style="color:var(--cyan);">⊕ QUBIT — SFERA BLOCH</div>
-      <div class="lp-sub">Stare cuantica |ψ⟩ = α|0⟩ + β|1⟩</div>
+      <div class="lp-title" style="color:var(--cyan);">⊕ QUBIT — BLOCH SPHERE</div>
+      <div class="lp-sub">Quantum state |ψ⟩ = α|0⟩ + β|1⟩</div>
       <div style="text-align:center;margin:6px 0;">
         <canvas id="blochLive" width="180" height="180" style="display:inline-block;"></canvas>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px;">
         <div class="sbox" style="padding:8px;">
           <div class="sv" id="qLiveP" style="color:var(--cyan);font-size:1.1rem;">—</div>
-          <div class="sl">p curent |α|²</div>
+          <div class="sl">current p |α|²</div>
         </div>
         <div class="sbox" style="padding:8px;">
           <div class="sv" id="qLiveTheta" style="color:var(--cyan);font-size:1.1rem;">90°</div>
-          <div class="sl">unghi θ (sare)</div>
+          <div class="sl">angle θ (jumps)</div>
         </div>
       </div>
       <div id="qLiveStatus" style="font-size:0.65rem;color:var(--gray);min-height:18px;text-align:center;">—</div>
       <div class="lp-why" style="border-color:rgba(0,229,255,0.2);">
-        <div style="font-size:0.6rem;color:var(--cyan);margin-bottom:4px;">MECANISM: INCERTITUDINE FIZICA</div>
+        <div style="font-size:0.6rem;color:var(--cyan);margin-bottom:4px;">MECHANISM: PHYSICAL UNCERTAINTY</div>
         <div style="font-size:0.62rem;color:var(--gray);line-height:1.7;">
-          Vectorul de stare sare aleator pe sfera — fiecare masurare = colaps cuantic imprevizibil. p = |cos(θ/2)|² fluctueaza haotic.<br>
-          <span style="color:var(--cyan)">Hardware: −273°C · Cost: milioane $</span>
+          State vector jumps randomly on sphere — each measurement = unpredictable quantum collapse. p = |cos(θ/2)|² fluctuates chaotically.<br>
+          <span style="color:var(--cyan)">Hardware: −273°C · Cost: millions $</span>
         </div>
       </div>
     </div>
@@ -248,26 +310,26 @@ body::after { content:''; position:fixed; inset:0; background:repeating-linear-g
     <!-- VS CENTER -->
     <div style="text-align:center;padding-top:80px;">
       <div style="font-size:1.5rem;color:var(--purple);text-shadow:0 0 20px var(--purple);font-weight:900;">VS</div>
-      <div style="font-size:0.5rem;color:var(--gray);margin-top:8px;letter-spacing:1px;line-height:1.8;">ACELASI<br>REZULTAT<br>p≈0.5<br>CAI<br>DIFERITE</div>
+      <div style="font-size:0.5rem;color:var(--gray);margin-top:8px;letter-spacing:1px;line-height:1.8;">SAME<br>RESULT<br>p≈0.5<br>DIFFERENT<br>PATHS</div>
     </div>
 
     <!-- ZPL PANEL -->
     <div class="live-panel live-z">
-      <div class="lp-title" style="color:var(--green);">⬡ ZPL / METABINAR</div>
-      <div class="lp-sub">Reducere matriciala XOR/AND determinista</div>
+      <div class="lp-title" style="color:var(--green);">⬡ ZPL — ZERO POINT LOGIC</div>
+      <div class="lp-sub">Deterministic structural matrix reduction</div>
       <div style="text-align:center;margin:8px 0;">
         <div id="zLiveGrid" class="mat-grid" style="display:inline-grid;"></div>
       </div>
       <div class="sbox" style="max-width:170px;margin:0 auto 6px;">
         <div class="sv" id="zLiveP" style="color:var(--green)">—</div>
-        <div class="sl">p curent</div>
+        <div class="sl">current p</div>
       </div>
       <div id="zLiveStatus" style="font-size:0.65rem;color:var(--orange);min-height:18px;">—</div>
       <div class="lp-why" style="border-color:rgba(0,255,136,0.2);">
-        <div style="font-size:0.6rem;color:var(--green);margin-bottom:4px;">MECANISM: ECHILIBRU STRUCTURAL</div>
+        <div style="font-size:0.6rem;color:var(--green);margin-bottom:4px;">MECHANISM: STRUCTURAL EQUILIBRIUM</div>
         <div style="font-size:0.62rem;color:var(--gray);line-height:1.7;">
-          Reducerile XOR/AND creeaza <strong style="color:var(--white)">atractor determinist</strong> — 1-urile si 0-urile se anuleaza reciproc prin matematica pura. Se reseteaza periodic sa arati convergenta din nou.<br>
-          <span style="color:var(--green)">Hardware: orice calculator · Cost: zero</span>
+          4 complementary operator families create a <strong style="color:var(--white)">deterministic attractor</strong> — 1s and 0s cancel each other through pure mathematics. Resets periodically to show convergence again.<br>
+          <span style="color:var(--green)">Hardware: any computer · Cost: zero</span>
         </div>
       </div>
     </div>
@@ -275,34 +337,34 @@ body::after { content:''; position:fixed; inset:0; background:repeating-linear-g
 
   <!-- Live chart -->
   <div style="display:flex;gap:20px;font-size:0.62rem;color:var(--gray);margin-bottom:5px;align-items:center;">
-    <span><span style="color:var(--cyan);">——</span> Quantum (sare aleator)</span>
-    <span><span style="color:var(--green);">——</span> ZPL (converge catre 0.5)</span>
+    <span><span style="color:var(--cyan);">——</span> Quantum (random jumps)</span>
+    <span><span style="color:var(--green);">——</span> ZPL (converges to 0.5)</span>
     <span><span style="color:rgba(255,255,255,0.25);">- -</span> target 0.500</span>
-    <span id="qvsResetLabel" style="color:var(--purple);opacity:0;transition:opacity 0.4s;font-weight:700;">↺ ZPL resetat cu bias nou</span>
+    <span id="qvsResetLabel" style="color:var(--purple);opacity:0;transition:opacity 0.4s;font-weight:700;">↺ ZPL reset with new bias</span>
   </div>
   <canvas id="qvsChart" height="90" style="width:100%;border-radius:8px;border:1px solid var(--border);display:block;"></canvas>
 
   <!-- Key data proof -->
   <div style="margin-top:12px;padding:12px;background:rgba(0,255,136,0.03);border:1px solid rgba(0,255,136,0.15);border-radius:8px;">
-    <div style="font-size:0.6rem;color:var(--green);letter-spacing:2px;margin-bottom:3px;">DOVADA — zpl_quantum_bridge_v2.py · 200,000 samples · N=9</div>
-    <div style="font-size:0.6rem;color:var(--gray);margin-bottom:10px;">Toate cele 4 familii de calcul ZPL produc independent p≈0.500</div>
+    <div style="font-size:0.6rem;color:var(--green);letter-spacing:2px;margin-bottom:3px;">PROOF — 200,000 samples · N=9 · all 4 operator families tested independently</div>
+    <div style="font-size:0.6rem;color:var(--gray);margin-bottom:10px;">All 4 ZPL operator families independently produce p≈0.500</div>
     <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px;">
-      <div class="sbox"><div class="sv" style="color:var(--green);font-size:1rem;">0.5003</div><div class="sl">familia 1 — xor_and</div></div>
-      <div class="sbox"><div class="sv" style="color:var(--green);font-size:1rem;">0.4987</div><div class="sl">familia 2 — or_nand</div></div>
-      <div class="sbox"><div class="sv" style="color:var(--green);font-size:1rem;">0.4999</div><div class="sl">familia 3 — nor_xnor</div></div>
-      <div class="sbox"><div class="sv" style="color:var(--green);font-size:1rem;">0.5001</div><div class="sl">familia 4 — imp_nimp</div></div>
+      <div class="sbox"><div class="sv" style="color:var(--green);font-size:1rem;">0.5003</div><div class="sl">Family 1</div></div>
+      <div class="sbox"><div class="sv" style="color:var(--green);font-size:1rem;">0.4987</div><div class="sl">Family 2</div></div>
+      <div class="sbox"><div class="sv" style="color:var(--green);font-size:1rem;">0.4999</div><div class="sl">Family 3</div></div>
+      <div class="sbox"><div class="sv" style="color:var(--green);font-size:1rem;">0.5001</div><div class="sl">Family 4</div></div>
     </div>
     <div style="border-top:1px solid rgba(0,255,136,0.12);padding-top:10px;">
-      <div style="font-size:0.6rem;color:var(--cyan);letter-spacing:2px;margin-bottom:6px;">TEST FERESTRE DE SUPERPOZITIE — stabilitate in timp (nu doar medie globala)</div>
+      <div style="font-size:0.6rem;color:var(--cyan);letter-spacing:2px;margin-bottom:6px;">SUPERPOSITION WINDOW TEST — stability over time (not just global average)</div>
       <div style="display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:center;">
         <div class="sbox" style="border-color:rgba(0,229,255,0.3);min-width:90px;">
           <div class="sv" style="color:var(--cyan);">20/20</div>
-          <div class="sl">ferestre ✓</div>
+          <div class="sl">windows ✓</div>
         </div>
         <div style="font-size:0.62rem;color:var(--gray);line-height:1.9;">
-          200,000 samples impartiti in <strong style="color:var(--white)">20 ferestre</strong> de cate 10,000 fiecare.<br>
-          Un qubit real in superpozitie are p=0.5 <em>in orice fereastra de timp</em>, nu doar in medie — asta e proprietatea cuantica reala.<br>
-          ZPL a mentinut p≈0.500 in <strong style="color:var(--cyan)">toate cele 20 ferestre</strong> — comportament identic cu un qubit, dar prin matematica determinista.
+          200,000 samples split into <strong style="color:var(--white)">20 windows</strong> of 10,000 each.<br>
+          A real qubit in superposition has p=0.5 <em>in every time window</em>, not just on average — that is the actual quantum property.<br>
+          ZPL maintained p≈0.500 in <strong style="color:var(--cyan)">all 20 windows</strong> — identical behavior to a qubit, achieved through deterministic mathematics.
         </div>
       </div>
     </div>
@@ -311,13 +373,13 @@ body::after { content:''; position:fixed; inset:0; background:repeating-linear-g
 
 <!-- ④ BATTLE LIVE — 4 sisteme -->
 <div class="card glow-g">
-  <div class="sec-title">④ BATTLE LIVE — 4 sisteme cu acelasi bias, in timp real</div>
+  <div class="sec-title">⑤ BATTLE LIVE — 4 systems, same bias, real time</div>
   <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;flex-wrap:wrap;">
-    <span style="font-size:0.65rem;color:var(--gray);">Bias initial:</span>
+    <span style="font-size:0.65rem;color:var(--gray);">Initial bias:</span>
     <input type="range" id="sysbiasSlider" min="10" max="90" value="85" style="width:120px">
     <span class="cv" id="sysbiasVal" style="color:var(--gold);">85%</span>
-    <button class="btn btn-g" onclick="resetSystems()" style="padding:6px 14px;font-size:0.65rem;">↺ RESET CU BIAS NOU</button>
-    <span style="font-size:0.6rem;color:var(--gray);">Se reseteaza automat la fiecare ~18 pasi</span>
+    <button class="btn btn-g" onclick="resetSystems()" style="padding:6px 14px;font-size:0.65rem;">↺ RESET WITH NEW BIAS</button>
+    <span style="font-size:0.6rem;color:var(--gray);">Auto-reset every ~18 steps</span>
   </div>
 
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
@@ -333,7 +395,7 @@ body::after { content:''; position:fixed; inset:0; background:repeating-linear-g
         <div class="sl">p output</div>
       </div>
       <div class="sys-status" id="ss_zpl" style="color:var(--green);">—</div>
-      <div class="sys-rule">Regula: reducere XOR+AND matriciala<br>Tinta: p → 0.5 indiferent de input</div>
+      <div class="sys-rule">Rule: structural boolean matrix reduction<br>Target: p → 0.5 regardless of input</div>
     </div>
 
     <!-- Conway GoL -->
@@ -347,7 +409,7 @@ body::after { content:''; position:fixed; inset:0; background:repeating-linear-g
         <div class="sl">p output</div>
       </div>
       <div class="sys-status" id="ss_conway" style="color:var(--cyan);">—</div>
-      <div class="sys-rule">Regula: nastere/moarte dupa vecini (3 / 2-3)<br>Tinta: niciun echilibru impus — evolueaza haotic</div>
+      <div class="sys-rule">Rule: birth/death by neighbors (3 / 2-3)<br>Target: no imposed equilibrium — evolves chaotically</div>
     </div>
 
     <!-- Ising -->
@@ -361,7 +423,7 @@ body::after { content:''; position:fixed; inset:0; background:repeating-linear-g
         <div class="sl">p output</div>
       </div>
       <div class="sys-status" id="ss_ising" style="color:var(--orange);">—</div>
-      <div class="sys-rule">Regula: spin flip termal (Metropolis)<br>Tinta: minimizare energie — tinde spre 0 sau 1</div>
+      <div class="sys-rule">Rule: thermal spin flip (Metropolis)<br>Target: energy minimization — tends toward 0 or 1</div>
     </div>
 
     <!-- Majority CA -->
@@ -375,52 +437,52 @@ body::after { content:''; position:fixed; inset:0; background:repeating-linear-g
         <div class="sl">p output</div>
       </div>
       <div class="sys-status" id="ss_majority" style="color:var(--gold);">—</div>
-      <div class="sys-rule">Regula: fiecare celula = majoritate a vecinilor<br>Tinta: consens global (0 sau 1, niciodata 0.5)</div>
+      <div class="sys-rule">Rule: each cell = majority of neighbors<br>Target: global consensus (0 or 1, never 0.5)</div>
     </div>
   </div>
 
   <!-- Score from real tests -->
   <div style="margin-top:14px;padding:10px;background:rgba(0,0,0,0.3);border-radius:8px;border:1px solid var(--border);">
-    <div style="font-size:0.6rem;color:var(--gray);letter-spacing:2px;margin-bottom:8px;">REZULTATE REALE (N=9, 120 rulari fiecare, 11 valori de bias)</div>
+    <div style="font-size:0.6rem;color:var(--gray);letter-spacing:2px;margin-bottom:8px;">REAL RESULTS (N=9, 120 runs each, 11 bias values)</div>
     <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;">
       <div class="sbox" style="border-color:rgba(0,255,136,0.3);">
-        <div class="sv" style="color:var(--green);font-size:1.1rem;">0.019</div><div class="sl">ZPL Δ mediu</div>
+        <div class="sv" style="color:var(--green);font-size:1.1rem;">0.019</div><div class="sl">ZPL avg Δ</div>
       </div>
       <div class="sbox">
-        <div class="sv" style="color:var(--cyan);font-size:1.1rem;">0.403</div><div class="sl">Conway Δ mediu</div>
+        <div class="sv" style="color:var(--cyan);font-size:1.1rem;">0.403</div><div class="sl">Conway avg Δ</div>
       </div>
       <div class="sbox">
-        <div class="sv" style="color:var(--orange);font-size:1.1rem;">0.329</div><div class="sl">Ising Δ mediu</div>
+        <div class="sv" style="color:var(--orange);font-size:1.1rem;">0.329</div><div class="sl">Ising avg Δ</div>
       </div>
       <div class="sbox">
-        <div class="sv" style="color:var(--gold);font-size:1.1rem;">0.462</div><div class="sl">Majority Δ mediu</div>
+        <div class="sv" style="color:var(--gold);font-size:1.1rem;">0.462</div><div class="sl">Majority avg Δ</div>
       </div>
     </div>
-    <div style="text-align:center;margin-top:8px;font-size:0.65rem;color:var(--green);font-weight:700;">ZPL castiga 11/11 valori de bias — cel mai mic Δ la 0.5</div>
+    <div style="text-align:center;margin-top:8px;font-size:0.65rem;color:var(--green);font-weight:700;">ZPL wins 11/11 bias values — smallest Δ from 0.5</div>
   </div>
 </div>
 
 <!-- ⑤ CRITICAL SYSTEMS -->
 <div class="card" style="border-color:rgba(255,136,0,0.25);box-shadow:0 0 20px rgba(255,136,0,0.05);">
-  <div class="sec-title" style="color:var(--orange);">⑤ SISTEME CRITICE — HybridController LIVE</div>
+  <div class="sec-title" style="color:var(--orange);">⑥ CRITICAL SYSTEMS — HybridController LIVE</div>
 
   <!-- Live status bar -->
   <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px;">
     <div class="sbox" style="border-color:rgba(255,136,0,0.3);">
       <div class="sv" id="critP" style="font-size:1.2rem;color:var(--orange);">—</div>
-      <div class="sl">p sistem curent</div>
+      <div class="sl">current system p</div>
     </div>
     <div class="sbox" id="critZplBox">
       <div class="sv" id="critZplState" style="font-size:0.85rem;">—</div>
-      <div class="sl">stare ZPL</div>
+      <div class="sl">ZPL state</div>
     </div>
     <div class="sbox">
       <div class="sv" id="critZone" style="font-size:0.85rem;color:var(--gray);">—</div>
-      <div class="sl">zona activa</div>
+      <div class="sl">active zone</div>
     </div>
     <div class="sbox">
       <div class="sv" id="critAction" style="font-size:0.75rem;color:var(--gray);">—</div>
-      <div class="sl">actiune controller</div>
+      <div class="sl">controller action</div>
     </div>
   </div>
 
@@ -428,33 +490,33 @@ body::after { content:''; position:fixed; inset:0; background:repeating-linear-g
   <canvas id="critCanvas" height="100" style="width:100%;border-radius:10px;border:1px solid rgba(255,136,0,0.2);display:block;margin-bottom:10px;"></canvas>
 
   <!-- History chart -->
-  <div style="font-size:0.6rem;color:var(--gray);margin-bottom:4px;">Istoric sistem (linie alba = fara ZPL · linie verde = ZPL activ · linie rosie = panica)</div>
+  <div style="font-size:0.6rem;color:var(--gray);margin-bottom:4px;">System history (white = no ZPL · green = ZPL active · red = panic)</div>
   <canvas id="critHistory" height="70" style="width:100%;border-radius:8px;border:1px solid var(--border);display:block;margin-bottom:12px;"></canvas>
 
   <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px;">
     <div class="sbox" style="border-color:rgba(255,50,80,0.3);">
       <div class="sv" style="color:var(--red);font-size:0.85rem;">&lt;0.38 / &gt;0.62</div>
-      <div class="sl">PANICA — ZPL OFF</div>
+      <div class="sl">PANIC — ZPL OFF</div>
     </div>
     <div class="sbox" style="border-color:rgba(255,136,0,0.3);">
       <div class="sv" style="color:var(--orange);font-size:0.85rem;">0.38–0.44 / 0.56–0.62</div>
-      <div class="sl">TRANZITIE — monitoring</div>
+      <div class="sl">TRANSITION — monitoring</div>
     </div>
     <div class="sbox" style="border-color:rgba(0,255,136,0.3);">
       <div class="sv" style="color:var(--green);font-size:0.85rem;">0.44 – 0.56</div>
-      <div class="sl">SIGUR — ZPL ON</div>
+      <div class="sl">SAFE — ZPL ON</div>
     </div>
   </div>
 
   <div style="font-size:0.65rem;color:var(--gray);line-height:1.8;padding:10px;background:rgba(0,0,0,0.3);border-radius:8px;">
-    Simulare: sistemul primeste perturbari externe aleatorii (zgomot). Cand intra in <strong style="color:var(--green)">banda sigura</strong>, ZPL il trage spre 0.5.
-    Cand intra in <strong style="color:var(--red)">zona panica</strong> (aviatie: motor on/off, medical: inima bate/nu bate), ZPL se dezactiveaza — sistemul ramane la extrem intentionat.
+    Simulation: the system receives random external perturbations (noise). When it enters the <strong style="color:var(--green)">safe band</strong>, ZPL pulls it toward 0.5.
+    When it enters the <strong style="color:var(--red)">panic zone</strong> (aviation: engine on/off, medical: heart beating/not beating), ZPL deactivates — the system stays at the extreme intentionally.
   </div>
 </div>
 
 </div><!-- /page -->
 
-<div id="toast"><h2>⬡ AIN REACHED</h2><p>p(output) ≈ 0.500 — ECHILIBRU</p></div>
+<div id="toast"><h2>⬡ AIN REACHED</h2><p>p(output) ≈ 0.500 — EQUILIBRIUM</p></div>
 
 <script>
 // ══════════════════════════════════════════
@@ -618,9 +680,9 @@ function updateAIN(pIn,pOut){
   document.getElementById('ainFill').style.background=color;
   document.getElementById('ainMk').style.left=(pOut*100)+'%';
   const st=document.getElementById('ainStatus');
-  if(dev<0.03){ st.textContent=`✓ AIN ACTIV — p=${pOut.toFixed(4)} (Δ=${dev.toFixed(4)})`; st.style.color='var(--green)'; }
-  else if(dev<0.1){ st.textContent=`◈ APROAPE — p=${pOut.toFixed(4)} (Δ=${dev.toFixed(4)})`; st.style.color='var(--gold)'; }
-  else { st.textContent=`→ FAZA TRANZITIE — input extrem (p_in=${pIn.toFixed(3)})`; st.style.color='var(--red)'; }
+  if(dev<0.03){ st.textContent=`✓ AIN ACTIVE — p=${pOut.toFixed(4)} (Δ=${dev.toFixed(4)})`; st.style.color='var(--green)'; }
+  else if(dev<0.1){ st.textContent=`◈ NEAR EQUILIBRIUM — p=${pOut.toFixed(4)} (Δ=${dev.toFixed(4)})`; st.style.color='var(--gold)'; }
+  else { st.textContent=`→ TRANSITION PHASE — extreme input (p_in=${pIn.toFixed(3)})`; st.style.color='var(--red)'; }
 }
 
 // ══════════════════════════════════════════
@@ -875,8 +937,8 @@ function tickQvsZ(){
   if(qEl){ qEl.textContent=qp.toFixed(4); qEl.style.color=qDev<0.05?'var(--cyan)':qDev<0.2?'var(--gold)':'var(--red)'; }
   if(qTh){ qTh.textContent=Math.round(blochTheta*180/Math.PI)+'°'; }
   if(zEl){ zEl.textContent=zp.toFixed(4); zEl.style.color=zDev<0.03?'var(--green)':zDev<0.1?'var(--gold)':'var(--orange)'; }
-  if(qSt){ qSt.textContent=qDev<0.04?'|ψ⟩ in superpozitie (0.5 intamplator)':'|ψ⟩ sare aleator — nu converge'; qSt.style.color=qDev<0.04?'var(--cyan)':'var(--gray)'; }
-  if(zSt){ zSt.textContent=zDev<0.03?'✓ AIN ACTIV — ECHILIBRU p≈0.500':`pas ${zLiveStep} — p=${zp.toFixed(3)} → converge...`; zSt.style.color=zDev<0.03?'var(--green)':'var(--orange)'; }
+  if(qSt){ qSt.textContent=qDev<0.04?'|ψ⟩ in superposition (0.5 by chance)':'|ψ⟩ jumps randomly — no convergence'; qSt.style.color=qDev<0.04?'var(--cyan)':'var(--gray)'; }
+  if(zSt){ zSt.textContent=zDev<0.03?'✓ AIN ACTIVE — STRUCTURAL EQUILIBRIUM p≈0.500':`step ${zLiveStep} — p=${zp.toFixed(3)} → converging...`; zSt.style.color=zDev<0.03?'var(--green)':'var(--orange)'; }
 
   qvsHist.q.push(qp); qvsHist.z.push(zp);
   if(qvsHist.q.length>80){ qvsHist.q.shift(); qvsHist.z.shift(); }
@@ -1007,11 +1069,11 @@ function tickSystems(){
     }
     if(sEl){
       if(sys==='zpl'){
-        sEl.textContent=dev<0.04?'✓ AIN ACTIV — ECHILIBRU STRUCTURAL':`converge... Δ=${dev.toFixed(3)}`;
+        sEl.textContent=dev<0.04?'✓ AIN ACTIVE — STRUCTURAL EQUILIBRIUM':`converging... Δ=${dev.toFixed(3)}`;
         sEl.style.color=dev<0.04?'var(--green)':'var(--gold)';
       } else {
         const nm={conway:'GoL',ising:'Ising',majority:'Majority'};
-        sEl.textContent=dev<0.04?`${nm[sys]}: 0.5 (intamplator)`:`${nm[sys]}: Δ=${dev.toFixed(3)} ✗ nu converge`;
+        sEl.textContent=dev<0.04?`${nm[sys]}: 0.5 (coincidence)`:`${nm[sys]}: Δ=${dev.toFixed(3)} ✗ no convergence`;
         sEl.style.color=dev<0.04?'var(--cyan)':'var(--red)';
       }
     }
@@ -1063,11 +1125,11 @@ function drawCritCanvas(){
 
   // Zone labels
   ctx.font='bold 11px Courier New'; ctx.textAlign='center';
-  ctx.fillStyle='rgba(255,80,80,0.9)';  ctx.fillText('PANICA',PANIC_LO/2*W,18);
-  ctx.fillStyle='rgba(255,136,0,0.9)';  ctx.fillText('TRAN',((PANIC_LO+BAND_MIN)/2)*W,18);
+  ctx.fillStyle='rgba(255,80,80,0.9)';  ctx.fillText('PANIC',PANIC_LO/2*W,18);
+  ctx.fillStyle='rgba(255,136,0,0.9)';  ctx.fillText('TRANS',((PANIC_LO+BAND_MIN)/2)*W,18);
   ctx.fillStyle='rgba(0,255,136,0.95)'; ctx.fillText('ZPL ON',0.5*W,18);
-  ctx.fillStyle='rgba(255,136,0,0.9)';  ctx.fillText('TRAN',((BAND_MAX+PANIC_HI)/2)*W,18);
-  ctx.fillStyle='rgba(255,80,80,0.9)';  ctx.fillText('PANICA',((PANIC_HI+1)/2)*W,18);
+  ctx.fillStyle='rgba(255,136,0,0.9)';  ctx.fillText('TRANS',((BAND_MAX+PANIC_HI)/2)*W,18);
+  ctx.fillStyle='rgba(255,80,80,0.9)';  ctx.fillText('PANIC',((PANIC_HI+1)/2)*W,18);
 
   // Tick marks
   [0,PANIC_LO,BAND_MIN,0.5,BAND_MAX,PANIC_HI,1].forEach(v=>{
@@ -1138,7 +1200,7 @@ function drawCritHistory(){
 
   // Labels
   ctx.font='9px Courier New'; ctx.textAlign='left';
-  ctx.fillStyle='rgba(255,51,85,0.7)'; ctx.fillText('PANICA',4,12);
+  ctx.fillStyle='rgba(255,51,85,0.7)'; ctx.fillText('PANIC',4,12);
   ctx.fillStyle='rgba(0,255,136,0.7)'; ctx.fillText('ZPL ON',BAND_MIN*W+4,32);
 }
 
@@ -1180,14 +1242,14 @@ function tickCritical(){
     else { el_state.textContent='✗ ZPL OFF'; el_state.style.color='var(--red)'; }
   }
   if(el_zone){
-    if(zone==='safe'){ el_zone.textContent='BANDA SIGURA'; el_zone.style.color='var(--green)'; }
-    else if(zone==='transition'){ el_zone.textContent='TRANZITIE'; el_zone.style.color='var(--orange)'; }
-    else { el_zone.textContent='ZONA PANICA'; el_zone.style.color='var(--red)'; }
+    if(zone==='safe'){ el_zone.textContent='SAFE BAND'; el_zone.style.color='var(--green)'; }
+    else if(zone==='transition'){ el_zone.textContent='TRANSITION'; el_zone.style.color='var(--orange)'; }
+    else { el_zone.textContent='PANIC ZONE'; el_zone.style.color='var(--red)'; }
   }
   if(el_action){
-    if(zone==='safe'){ el_action.textContent='trage spre 0.5'; el_action.style.color='var(--green)'; }
-    else if(zone==='transition'){ el_action.textContent='monitorizez...'; el_action.style.color='var(--orange)'; }
-    else { el_action.textContent='sistem liber la extrem'; el_action.style.color='var(--red)'; }
+    if(zone==='safe'){ el_action.textContent='pulling toward 0.5'; el_action.style.color='var(--green)'; }
+    else if(zone==='transition'){ el_action.textContent='monitoring...'; el_action.style.color='var(--orange)'; }
+    else { el_action.textContent='system free at extreme'; el_action.style.color='var(--red)'; }
   }
   if(el_box){ el_box.style.borderColor=zone==='safe'?'rgba(0,255,136,0.4)':zone==='transition'?'rgba(255,136,0,0.3)':'rgba(255,51,85,0.4)'; }
 
@@ -1196,6 +1258,101 @@ function tickCritical(){
 }
 
 setInterval(tickCritical,600);
+
+// ══════════════════════════════════════════
+//  ③ LIVE API TEST FUNCTIONS
+// ══════════════════════════════════════════
+document.getElementById('apiBiasSlider').addEventListener('input',e=>{
+  document.getElementById('apiBiasVal').textContent=e.target.value+'%';
+});
+
+async function runSingleAPITest(){
+  const samples=parseInt(document.getElementById('apiSamplesSelect').value);
+  const bias=parseInt(document.getElementById('apiBiasSlider').value)/100;
+  const N=parseInt(document.getElementById('apiNSelect').value);
+  const status=document.getElementById('apiTestStatus');
+  const result=document.getElementById('apiSingleResult');
+  result.style.display='none';
+  status.textContent='⏳ calling server...';
+  try{
+    const r=await fetch(API_URL+'/samples',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({samples,bias,N})
+    });
+    const d=await r.json();
+    const p=d.p_output, dev=d.deviation_from_0_5;
+    const ok=dev<0.05;
+    document.getElementById('ar_p').textContent=p.toFixed(4);
+    document.getElementById('ar_p').style.color=ok?'var(--green)':dev<0.1?'var(--gold)':'var(--red)';
+    document.getElementById('ar_dev').textContent=dev.toFixed(4);
+    document.getElementById('ar_dev').style.color=ok?'var(--green)':'var(--orange)';
+    document.getElementById('ar_bias').textContent=(bias*100).toFixed(0)+'%';
+    document.getElementById('ar_n').textContent=N+'×'+N;
+    const st=document.getElementById('ar_status');
+    st.textContent=d.status;
+    st.style.color=ok?'var(--green)':p>0.5?'var(--orange)':'var(--cyan)';
+    result.style.display='block';
+    status.textContent=`✓ done in ${d.elapsed_s}s — ${samples.toLocaleString()} samples processed on server`;
+    status.style.color='var(--green)';
+  }catch(e){
+    status.textContent='✗ API error: '+e.message;
+    status.style.color='var(--red)';
+  }
+}
+
+async function runSweepAPITest(){
+  const samples=parseInt(document.getElementById('apiSamplesSelect').value);
+  const N=parseInt(document.getElementById('apiNSelect').value);
+  const status=document.getElementById('apiTestStatus');
+  const sweepDiv=document.getElementById('apiSweepResult');
+  const tbody=document.getElementById('sweepBody');
+  const summary=document.getElementById('sweepSummary');
+  sweepDiv.style.display='none';
+  tbody.innerHTML='';
+  status.textContent='⏳ running full sweep on server...';
+  status.style.color='var(--gold)';
+  try{
+    const r=await fetch(API_URL+'/sweep',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({samples,N})
+    });
+    const d=await r.json();
+    d.results.forEach(row=>{
+      const ok=row.stable;
+      const barW=Math.round((1-row.deviation*8)*60);
+      const col=ok?'#00ff88':row.deviation<0.1?'#ffcc00':'#ff3355';
+      const tr=document.createElement('tr');
+      tr.style.borderBottom='1px solid rgba(255,255,255,0.04)';
+      tr.innerHTML=`
+        <td style="padding:6px 10px;color:var(--gold)">${(row.bias*100).toFixed(0)}%</td>
+        <td style="padding:6px 10px;text-align:center;color:${col};font-weight:700">${row.p_output.toFixed(4)}</td>
+        <td style="padding:6px 10px;text-align:center;color:${col}">${row.deviation.toFixed(4)}</td>
+        <td style="padding:6px 10px;text-align:center;">
+          <span style="padding:2px 8px;border-radius:8px;font-size:0.6rem;font-weight:700;
+            background:${ok?'rgba(0,255,136,0.12)':'rgba(255,51,85,0.1)'};
+            color:${ok?'var(--green)':'var(--red)'};
+            border:1px solid ${ok?'rgba(0,255,136,0.3)':'rgba(255,51,85,0.3)'}">
+            ${ok?'✓ STABLE':'~ ACTIVE'}
+          </span>
+        </td>
+        <td style="padding:6px 10px;text-align:right;">
+          <div style="display:inline-block;height:6px;width:${Math.max(4,barW)}px;background:${col};border-radius:3px;opacity:0.8"></div>
+        </td>`;
+      tbody.appendChild(tr);
+    });
+    summary.innerHTML=`
+      <span style="color:var(--green);font-weight:700">${d.verdict}</span>
+      <span style="color:var(--gray);margin-left:16px">N=${N} · ${samples.toLocaleString()} samples/bias · ${d.elapsed_s}s total</span>`;
+    sweepDiv.style.display='block';
+    status.textContent=`✓ sweep complete — ${d.stable_count}/${d.total_tested} biases STABLE`;
+    status.style.color='var(--green)';
+  }catch(e){
+    status.textContent='✗ API error: '+e.message;
+    status.style.color='var(--red)';
+  }
+}
 
 // ══════════════════════════════════════════
 //  INIT
