@@ -252,7 +252,14 @@ body::after { content:''; position:fixed; inset:0; background:repeating-linear-g
 
 <!-- ③ LIVE API TEST -->
 <div class="card glow-g">
-  <div class="sec-title">③ LIVE SERVER TEST — REAL API CALLS (Railway.app)</div>
+  <div class="sec-title">③ LIVE SERVER TEST — REAL API CALLS (zeropointlogic.io)</div>
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;padding:10px 14px;background:rgba(187,85,255,0.05);border:1px solid rgba(187,85,255,0.2);border-radius:8px;flex-wrap:wrap;">
+    <span style="font-size:0.6rem;color:var(--purple);letter-spacing:2px;font-weight:700;">API KEY</span>
+    <input id="demoApiKey" type="text" placeholder="Optional — leave empty for free anonymous access (N≤9)"
+      style="flex:1;min-width:260px;background:#0a001a;border:1px solid rgba(187,85,255,0.4);color:var(--purple);padding:6px 12px;border-radius:6px;font-size:0.72rem;font-family:'Courier New',monospace;outline:none;">
+    <a href="https://zeropointlogic.io" target="_blank"
+      style="font-size:0.6rem;color:var(--green);text-decoration:none;letter-spacing:1px;white-space:nowrap;">Get free key →</a>
+  </div>
   <div class="ctrl-bar">
     <label>SAMPLES</label>
     <select id="apiSamplesSelect" style="background:#0a001a;border:1px solid var(--purple);color:var(--purple);padding:5px 10px;border-radius:6px;font-size:0.72rem;cursor:pointer;">
@@ -357,7 +364,7 @@ body::after { content:''; position:fixed; inset:0; background:repeating-linear-g
   </div>
 
   <div style="margin-top:10px;font-size:0.62rem;color:var(--gray);line-height:1.7;">
-    All results come directly from the live server at <span style="color:var(--cyan);">web-production-5ece2.up.railway.app</span> — no simulation, no pre-computed data.
+    All results come directly from the live server at <span style="color:var(--cyan);">zpl-backend.onrender.com</span> — no simulation, no pre-computed data.
     The server runs the canonical ZPL algorithm (4 complementary boolean operator families, 8N+3 bits) on random binary matrices.
   </div>
 </div>
@@ -692,9 +699,21 @@ function zplStep(mat,n){
 function matP(mat){ let s=0; mat.forEach(r=>r.forEach(v=>s+=v)); return s/(mat.length*mat.length); }
 function mkMat(n,p){ return Array.from({length:n},()=>Array.from({length:n},()=>Math.random()<p?1:0)); }
 // ── API CONFIG ──────────────────────────────────────────────────
-// ZPL Engine API — Railway.app (always online)
-const API_URL = 'https://web-production-5ece2.up.railway.app';
-// Pentru test local: const API_URL = 'http://localhost:5000';
+// ZPL Backend — Render (with auth + rate limiting)
+const API_URL = 'https://zpl-backend.onrender.com';
+// Pentru test local: const API_URL = 'http://localhost:8000';
+
+function getApiKey() {
+  const el = document.getElementById('demoApiKey');
+  return el ? el.value.trim() : '';
+}
+
+function apiHeaders() {
+  const key = getApiKey();
+  const h = {'Content-Type': 'application/json'};
+  if (key) h['X-Api-Key'] = key;
+  return h;
+}
 
 async function verifyAPI(){
   const btn = document.getElementById('btnAPI');
@@ -704,9 +723,9 @@ async function verifyAPI(){
   btn.textContent = '⏳ ...'; btn.disabled = true;
   res.style.display = 'none';
   try {
-    const r = await fetch(API_URL + '/samples', {
+    const r = await fetch(API_URL + '/compute', {
       method: 'POST',
-      headers: {'Content-Type':'application/json'},
+      headers: apiHeaders(),
       body: JSON.stringify({samples: 2000, bias: bias, N: N})
     });
     const d = await r.json();
@@ -1470,9 +1489,9 @@ async function runSingleAPITest(){
   result.style.display='none';
   status.textContent='⏳ calling server...';
   try{
-    const r=await fetch(API_URL+'/samples',{
+    const r=await fetch(API_URL+'/compute',{
       method:'POST',
-      headers:{'Content-Type':'application/json'},
+      headers:apiHeaders(),
       body:JSON.stringify({samples,bias,N})
     });
     const d=await r.json();
@@ -1508,10 +1527,11 @@ async function runSweepAPITest(){
   status.textContent='⏳ running full sweep on server...';
   status.style.color='var(--gold)';
   try{
-    const r=await fetch(API_URL+'/sweep',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({samples,N})
+    const key=getApiKey();
+    const sweepUrl=`${API_URL}/sweep?N=${N}&samples=${samples}`;
+    const r=await fetch(sweepUrl,{
+      method:'GET',
+      headers: key ? {'X-Api-Key':key} : {}
     });
     const d=await r.json();
     d.results.forEach(row=>{
@@ -1561,17 +1581,18 @@ function stressLog(msg, color='var(--gray)'){
 }
 
 async function zplCall(bias, N, samples){
-  const r = await fetch(API_URL+'/samples',{
-    method:'POST', headers:{'Content-Type':'application/json'},
+  const r = await fetch(API_URL+'/compute',{
+    method:'POST', headers:apiHeaders(),
     body: JSON.stringify({bias, N, samples})
   });
   return r.json();
 }
 
 async function zplSweep(N, samples){
-  const r = await fetch(API_URL+'/sweep',{
-    method:'POST', headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({N, samples})
+  const key=getApiKey();
+  const r = await fetch(`${API_URL}/sweep?N=${N}&samples=${samples}`,{
+    method:'GET',
+    headers: key ? {'X-Api-Key':key} : {}
   });
   return r.json();
 }
